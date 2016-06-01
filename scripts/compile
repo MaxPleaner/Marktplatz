@@ -1,12 +1,12 @@
-source "$RootDir/scripts/lib/colors.sh";
-source "$RootDir/scripts/lib/npm_exec.sh"
+source "./scripts/lib/colors.sh";
+source "./scripts/lib/npm_exec.sh"
 
 printf "${BIYellow}compiling${Color_Off}\n"
 
-rm $RootDir/compiled/main.js;
-npm_exec babel $RootDir/main.js --out-file $RootDir/compiled/main.js;
+rm ./compiled/main.js;
+npm_exec babel ./main.js --out-file ./compiled/main.js;
 
-rm $RootDir/compiled/app/routes.js;
-npm_exec babel $RootDir/app/routes.js --out-file $RootDir/compiled/app/routes.js;
+rm ./compiled/app/routes.js;
+npm_exec babel ./app/routes.js --out-file ./compiled/app/routes.js;
 
 printf "${BGreen}finished compiling${Color_Off}\n"

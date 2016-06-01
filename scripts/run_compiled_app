@@ -1,7 +1,5 @@
-source "$RootDir/scripts/lib/colors.sh";
+source "./scripts/lib/colors.sh";
 
 printf "${BIGreen}Running compiled app${Color_Off}\n"
 
-AppRootDir=$RootDir/compiled
-
-nodejs $RootDir/compiled/main.js
+nodejs ./compiled/main.js
