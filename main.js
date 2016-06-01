@@ -21,7 +21,7 @@
    app = routes.addRoutesToApp(appComponents);
    console.log(routes.inspect());
 
-// Start server
-    // server.on('request', app);
-    // server.listen(port, function () { console.log('Listening on ' + server.address().port) });
+Start server
+    server.on('request', app);
+    server.listen(port, function () { console.log('Listening on ' + server.address().port) });
 

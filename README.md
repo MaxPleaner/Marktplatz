@@ -16,7 +16,7 @@ There are two ways to start the app:
 
 _Note that all these scripts should be called from the repo's root directory. In other words, don't `cd` into `scripts/` before running a script.
 
-- `scipts/console` is a REPL with the app loaded
+- `scipts/babel_repl` is a REPL with the same language presets as the app
 - `scripts/compile` will run Babel and save output to the `compiled` folder
 - `scripts/run_compiled_app`
 - `scripts/compile_and_run` just combines the aformentioned two scripts.
