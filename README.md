@@ -21,7 +21,11 @@ How to run the app:
   - Run the `./start` script. All this does is run the following two scripts in succession:
     - `./scripts/compile`
     - `./scripts/run_compiled_app`
-  - The `start` script will exit with an error unless the `RootDir` environment variable is set. Either export the variable or run the script with `RootDir=\`pwd\` ./start`
+  - The `start` script will exit with an error unless the `RootDir` environment variable is set. Either export the variable or run the script with  
+
+```sh
+RootDir=`pwd` ./start`
+```
 
 There are also `./scripts/compile` and `./scripts/run_compiled_app`, which can be used to separate the compile/run build step. This probably also offers a performance benefit to running the app.
 
