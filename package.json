@@ -16,6 +16,9 @@
     "bufferutil": "^1.2.1",
     "es6-module-loader": "^0.17.11",
     "express": "^4.13.4",
+    "pg": "^4.5.5",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^3.23.3",
     "underscore": "^1.8.3",
     "utf-8-validate": "^1.2.1",
     "ws": "^1.1.0"
