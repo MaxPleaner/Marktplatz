@@ -1,0 +1,5 @@
+source "$RootDir/scripts/lib/colors.sh";
+
+printf "${BIGreen}Running compiled app${Color_Off}\n"
+
+nodejs $RootDir/compiled/main.js

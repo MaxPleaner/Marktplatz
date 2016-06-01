@@ -1,1 +1,8 @@
-PATH=$(npm bin):$PATH babel-node main.js
+if [[ ! -v RootDir ]]
+then
+  echo "export the RootDir variable and run again. This should refer to this repo's root directory."
+  exit
+else
+  $RootDir/scripts/compile
+  $RootDir/scripts/run_compiled_app
+fi

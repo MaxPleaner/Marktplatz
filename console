@@ -1,0 +1,5 @@
+  source "./lib/npm_exec.sh"
+
+  npm_exec babel-node \
+  --presets es2015    \
+  --plugins transform-Dirname-filename
