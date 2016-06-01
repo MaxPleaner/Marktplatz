@@ -1,20 +1,19 @@
-export default class Routes {
+var Routes = exports;
 
-  addRoutesToApp(appComponents) {
-    var app = appComponents.app
-    app.use(function (req, res) {
-      res.send({ msg: "hello" });
-    });
-    return app;
-  }
-
-  inspect() {
-    return `\n
-      Routes
-        * => 'hello'
-    `
-  }
-
+Routes.addRoutesToApp = function(appComponents) {
+  var app = appComponents.app
+  app.use(function (req, res) {
+    res.send({ msg: "hello" });
+  });
+  return app;
 }
+
+Routes.inspect = function() {
+  return `\n
+    Routes
+      * => 'hello'
+  `
+}
+
 
 

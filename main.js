@@ -1,8 +1,3 @@
-// Module loading system
-// This, along with babel-transform-dirname-filename
-// enables relative paths when loading files.
-  var System = require('es6-module-loader').System;
-
 // Objects are required from dependencies
     var server = require('http').createServer()
       , url = require('url')
@@ -22,17 +17,9 @@
       port: port
     };
 
-// Routes using Express.js
-    System.import(__dirname + "/app/routes.js").then(
-      function(routes) {
-        var routes = new Routes();
-        app = routes.addRoutesToApp(appComponents);
-      /* Routes */ console.log(routes.inspect());
-      }
-    )
-    // import Routes from "./app/routes.js";
-
-// Debugging statements
+   var routes = require("./app/routes.js")
+   app = routes.addRoutesToApp(appComponents);
+   console.log(routes.inspect());
 
 // Start server
     // server.on('request', app);
