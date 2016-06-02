@@ -2,27 +2,32 @@
 1 verbose cli [ 'node', '/home/max/.nvm/v0.10.40/bin/npm', 'start' ]
 2 info using npm@2.0.0
 3 info using node@v0.10.40
-4 verbose stack Error: Failed to parse json
-4 verbose stack Unexpected token }
-4 verbose stack     at parseError (/home/max/.nvm/v0.10.40/lib/node_modules/npm/node_modules/read-package-json/read-json.js:378:25)
-4 verbose stack     at parseJson (/home/max/.nvm/v0.10.40/lib/node_modules/npm/node_modules/read-package-json/read-json.js:85:51)
-4 verbose stack     at /home/max/.nvm/v0.10.40/lib/node_modules/npm/node_modules/read-package-json/read-json.js:59:33
-4 verbose stack     at evalmachine.<anonymous>:272:14
-4 verbose stack     at /home/max/.nvm/v0.10.40/lib/node_modules/npm/node_modules/graceful-fs/graceful-fs.js:102:5
-4 verbose stack     at Object.oncomplete (evalmachine.<anonymous>:108:15)
-5 verbose cwd /home/max/Desktop/node-ws
-6 error Linux 3.19.0-60-generic
-7 error argv "node" "/home/max/.nvm/v0.10.40/bin/npm" "start"
-8 error node v0.10.40
-9 error npm  v2.0.0
-10 error file /home/max/Desktop/node-ws/package.json
-11 error code EJSONPARSE
-12 error Failed to parse json
-12 error Unexpected token }
-13 error File: /home/max/Desktop/node-ws/package.json
-14 error Failed to parse package.json data.
-14 error package.json must be actual JSON, not just JavaScript.
-14 error
-14 error This is not a bug in npm.
-14 error Tell the package author to fix their package.json file. JSON.parse
-15 verbose exit [ 1, true ]
+4 verbose run-script [ 'prestart', 'start', 'poststart' ]
+5 info prestart node-ws2@1.0.0
+6 info start node-ws2@1.0.0
+7 verbose unsafe-perm in lifecycle true
+8 info node-ws2@1.0.0 Failed to exec start script
+9 verbose stack Error: node-ws2@1.0.0 start: `nodejs main.js`
+9 verbose stack Exit status 1
+9 verbose stack     at ChildProcess.<anonymous> (/home/max/.nvm/v0.10.40/lib/node_modules/npm/lib/utils/lifecycle.js:212:16)
+9 verbose stack     at ChildProcess.emit (events.js:98:17)
+9 verbose stack     at maybeClose (child_process.js:766:16)
+9 verbose stack     at Process.ChildProcess._handle.onexit (child_process.js:833:5)
+10 verbose pkgid node-ws2@1.0.0
+11 verbose cwd /home/max/Desktop/node-ws
+12 error Linux 3.19.0-60-generic
+13 error argv "node" "/home/max/.nvm/v0.10.40/bin/npm" "start"
+14 error node v0.10.40
+15 error npm  v2.0.0
+16 error code ELIFECYCLE
+17 error node-ws2@1.0.0 start: `nodejs main.js`
+17 error Exit status 1
+18 error Failed at the node-ws2@1.0.0 start script.
+18 error This is most likely a problem with the node-ws2 package,
+18 error not with npm itself.
+18 error Tell the author that this fails on your system:
+18 error     nodejs main.js
+18 error You can get their info via:
+18 error     npm owner ls node-ws2
+18 error There is likely additional logging output above.
+19 verbose exit [ 1, true ]

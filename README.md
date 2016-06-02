@@ -8,9 +8,13 @@ The `ws` library is used for websockets
 
 ### Starting
 
+First go to `scripts/env_setup.sh.example` and fill in the required environment variables. Then remove the `.example` from the extension. This file is in `.gitignore`.
+
 There are two ways to start the app:
 - using babel. Use the executables in the `scripts/` folder to do this
-- using NodeJs. `npm start` accomplishes this
+- using NodeJs. `npm start` accomplishes this.
+
+Running `npm_start` will also source the `scripts/env_setup.sh` file, which configures the app. If the app is being started some other way, this file with have to be manually sourced before the app is run.
 
 ### The scripts in the `scripts/` folder:
 
