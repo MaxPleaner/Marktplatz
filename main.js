@@ -17,8 +17,8 @@ require("./app/models.js") // defines app.sequelize, app.Models and app.ORM
 // Function to start the server
 appHelpers.startServer = function() {
   global.server = require("http").createServer(),
-  global.wss = new WebSocketServer({ server: server })
   global.WebSocketServer = require('ws').Server,
+  global.wss = new WebSocketServer({ server: server })
   global.url = require('url'),
   global.port = 4080,
   global.express = require('express'),
