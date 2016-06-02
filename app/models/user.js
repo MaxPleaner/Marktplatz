@@ -5,3 +5,4 @@ var user = app.sequelize.define("user", {
 
 app.Models.User = exports = {}
 app.ORM.User = user
+ 

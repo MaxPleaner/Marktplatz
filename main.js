@@ -14,6 +14,10 @@ global = _.extend(global, {
 // App dependencies
 require("./app/models.js") // defines app.sequelize, app.Models and app.ORM
 
+appHelpers.addRoutesToExpressApp = function(){
+  require("./app/routes.js")
+}
+
 // Function to start the server
 appHelpers.startServer = function() {
   global.server = require("http").createServer(),
@@ -23,7 +27,7 @@ appHelpers.startServer = function() {
   global.port = 4080,
   global.express = require('express'),
   global.expressApp = express()
-  require("./app/routes.js") // adds routes to expressApp
+  appHelpers.addRoutesToExpressApp()
   server.on('request', expressApp);
   server.listen(port, function () {console.log('Listening on ' + server.address().port) });
 }
