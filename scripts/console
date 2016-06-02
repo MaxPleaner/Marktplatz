@@ -1,1 +1,9 @@
-echo "require('./main.js')" | nodejs;
+#!/usr/bin/nodejs
+
+require("../main.js")
+
+console.log("using /usr/bin/node. This can be changed in scripts/console")
+
+var repl = require("repl")
+var context = repl.start("> ").context
+context.util = require("util")

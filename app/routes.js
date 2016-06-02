@@ -1,6 +1,10 @@
 
 expressApp.use(function (req, res) {
-  app.Models.User.findOne(function(user){
-    res.send({ msg: user.firstName });
+  app.ORM.User.destroy({
+    truncate: true /* this will ignore where and truncate the table instead */
+  }).then(function(users){
+    res.send({
+      msg: _.map(users, (user) => JSON.stringify(user.get({plain: true}))).join()
+    });
   })
 });
