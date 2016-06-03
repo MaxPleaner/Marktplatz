@@ -33,10 +33,10 @@ appHelpers.startServer = function() {
 }
 
 // Start server after syncing models
-app.Models.syncModels(function(){
+app.Models.syncModels().then(function(){
+  console.log("synced models")
   if (require.main === module) { // meaning if this script is called directly
     appHelpers.startServer()
   } else {
-    console.log("ok")
   }
 })

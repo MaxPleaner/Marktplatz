@@ -12,7 +12,11 @@ app.ORM = {}
 
 require("./models/user.js") // defines app.Models.User and app.ORM.User
 
-app.Models.syncModels = function(callback){
-  app.ORM.User.sync({force: false}).then(() => callback())
+app.Models.syncModels = () => {
+  return new Promise(function (resolve, reject) {
+    app.ORM.User.sync({force: false}).then(function(){
+      resolve()
+    })
+  })
 }
 
