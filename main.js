@@ -38,5 +38,9 @@ app.Models.syncModels().then(function(){
   if (require.main === module) { // meaning if this script is called directly
     appHelpers.startServer()
   } else {
+    console.log("starting REPL")
+    var repl = require("repl")
+    var context = repl.start("> ").context
+    context.util = require("util")
   }
 })

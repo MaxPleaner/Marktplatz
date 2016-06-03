@@ -1,5 +1,4 @@
 source "./scripts/lib/colors.sh";
-source "./scripts/env_setup.sh";
 
 printf "${BIGreen}Running compiled app${Color_Off}\n"
 nodejs ./compiled/main.js
