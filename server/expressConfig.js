@@ -1,9 +1,3 @@
-// Start request listener
-server.on("request", expressApp);
-server.listen(port, function () {
-  console.log(`Listening on ${server.address().port}`.green) 
-});
-
 // Use layout files and EJS templating
 var expressLayouts = require("express-ejs-layouts")
 expressApp.use(expressLayouts)

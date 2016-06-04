@@ -1,58 +1,42 @@
-// Global namespace
-var MP = exports = {}
-
-// First-things-first NPM dependencies
-var _ = require("underscore")
-MP = _.extend(MP, {
-  _: _,
-  deepExtend: require("deep-extend")
-  colors: require("colors"),
-  Sequelize: require("sequelize")
-})
-
-// Objects for custom code
-MP = MP._.extend(MP, {
+// NPM dependencies
+require("colors")
+global._ = require("underscore")
+global = _.extend(global, {
+  Sequelize: require("sequelize"),
   app: {},
-  appHelpers: {}  
+  appHelpers: {},
 })
 
 // Load some environment variables into process.env
-MP = MP._.extend(MP, {
-  env: require("./server/env_vars.js")
-})
+require("./server/env_vars.js")
+console.log("loaded env vars from server/env_vars.js".green)
 
-// Load up model-related stuff
-var models = require("./server/models.js")(MP)
-MP = MP.deepExtend(MP, {
-  app: {
-    sequelize: models.sequelize,
-    Models: models.Models,
-    ORM: models.ORM
-  }
-})
+// App dependencies
+// defines app.sequelize, app.Models, and app.ORM
+require("./server/models.js")
 
-// Load up server stuff
-MP.appHelpers.startServer = function(MP){
-  MP.server = require("http").createServer()
-  MP.WebSocketServer = require('ws').Server,
-  MP.express = require('express')
-  MP.expressApp = express()
-  return MP.deepExtend(MP, {
-    url: require('url'),
-    wss: new MP.WebSocketServer({ server: MP.server }),
-    port: 4080,
-    expressApp: require("./server/routes.js")(
-      require("./server/expressConfig.js")(MP.expressApp)
-    ),
-    server: (function(){
-      var server = MP.server;
-      server.on("request", expressApp);
-      server.listen(port, function () {
-        console.log(`Listening on ${server.address().port}`.green) 
-      });
-      return server
-    })(),
-  })
+// Server connfiguration and routes
+// Defines routes on the expressApp object
+appHelpers.addRoutesToExpressApp = function(){
+  require("./server/expressConfig.js")
+  require("./server/routes.js")
+}
+
+// Function to start the server
+// Loads more NPM dependencies
+appHelpers.startServer = function() {
+  global.server = require("http").createServer(),
+  global.WebSocketServer = require('ws').Server,
+  global.wss = new WebSocketServer({ server: server })
+  global.url = require('url'),
+  global.port = 4080,
+  global.express = require('express'),
+  global.expressApp = express()
+  appHelpers.addRoutesToExpressApp()
+  server.on('request', expressApp);
+  server.listen(port, function () {
+    console.log(`Listening on ${server.address().port}`.green) 
+  });
 }
 
 // Start server after syncing (finalizing) models
