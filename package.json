@@ -16,6 +16,7 @@
     "body-parser": "^1.15.1",
     "bufferutil": "^1.2.1",
     "colors": "^1.1.2",
+    "deep-extend": "^0.4.1",
     "ejs": "^2.4.2",
     "es6-module-loader": "^0.17.11",
     "express": "^4.13.4",

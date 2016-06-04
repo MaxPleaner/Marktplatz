@@ -1,5 +1,19 @@
+RequestObjects = exports = {}
+
+RequestObjects.userParams = function(req) {
+  return {
+    username: req.body.username,
+    password: req.body.password,
+    email: req.body.email,
+  }
+}
+
 expressApp.post("/register", function(req, res){
-  res.send({message: req.body.message})
+  app.Models.User.register(userParmas(req)).then(function(user){
+    res.send({user: user})
+  }).catch(function(errors){
+    res.send({errors: errors})
+  })
 })
 
 expressApp.post("/login", function(req, res){
@@ -7,7 +21,7 @@ expressApp.post("/login", function(req, res){
 })
 
 expressApp.get("/", function(req, res){
-  res.render("test.ejs", { layout: "layout"})
+  res.render("index.ejs")
 })
 
 // expressApp.use(function (req, res) {

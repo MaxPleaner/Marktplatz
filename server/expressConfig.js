@@ -1,9 +1,15 @@
+// Start request listener
+server.on("request", expressApp);
+server.listen(port, function () {
+  console.log(`Listening on ${server.address().port}`.green) 
+});
+
 // Use layout files and EJS templating
 var expressLayouts = require("express-ejs-layouts")
+expressApp.use(expressLayouts)
 expressApp.set("view engine", "ejs")
 expressApp.set('views', "./client");
-expressApp.set("layout", "layout")
-expressApp.use(expressLayouts)
+expressApp.set("layout", "layout") // client/layout.ejs is the default layout
 
 // Use Sessions
 var session = require("express-session")
