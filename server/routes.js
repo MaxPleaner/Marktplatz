@@ -3,8 +3,8 @@ module.exports = function(expressApp, server) {
   var Models = server.Models
   var ORM = server.ORM
 
-  var requestObjects = require(".server/request_objects.js")
-  var userParams = requireObjects.userParams
+  var requestObjects = require("./request_objects.js")
+  var userParams = requestObjects.userParams
 
   expressApp.post("/register", function(req, res){
     Models.User.register(userParams(req)).then(function(user){

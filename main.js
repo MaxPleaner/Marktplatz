@@ -2,7 +2,7 @@
 // Everything is wrapped in an IIFE
 // ------------------------------
 
-(function() {
+var server = module.exports = (function() {
 
 // ------------------------------
 // The method which starts it all
@@ -12,10 +12,8 @@ function begin(server) {
   server.Models.syncModels(server.ORM).then(function(){
     console.log("synced models".green)
     if (require.main === module) {
-      startServer()
-    } else {
-      startREPL()
-    }
+      startServer(server)
+    } else { startServer(server) }
   })  
 }
 
@@ -35,11 +33,11 @@ function begin(server) {
   server.ORM = models.ORM
   server.Models = models.Models
 
-  var newExpressApp = function(httpServer) {
+  var newExpressApp = function(httpServer, server) {
     var express = require('express')
     var expressApp = express()
-    expressApp = require("./server/expressConfig.js")(expressApp)
-    expressApp = require("./server/routes.js")(expressApp)
+    expressApp = require("./server/expressConfig.js")(expressApp, express)
+    expressApp = require("./server/routes.js")(expressApp, server)
     return expressApp
   }
 
@@ -50,15 +48,15 @@ function begin(server) {
   var newWebsocketServer = function(httpServer) {
     var httpServer = require("http").createServer()
     var WsServerInit = require('ws').Server
-    var WsServer = WsServerInit({ httpServer: httpServer })
+    var WsServer = WsServerInit({ server: httpServer })
     return httpServer
   }
   
-  var startServer = function() {
+  var startServer = function(server) {
     console.log("starting server".green)
     var HttpServer = newHttpServer()
     var WebsocketServer = newWebsocketServer(HttpServer)
-    var expressApp = newExpressApp(HttpServer)
+    var expressApp = newExpressApp(HttpServer, server)
     HttpServer.on('request', expressApp);
     var url = require('url')
     var port = 4080
@@ -71,21 +69,12 @@ function begin(server) {
     }
   }
   
-  var startREPL = function() {
-    console.log("starting REPL".green)
-    var repl = require("repl")
-    var context = repl.start("> ").context
-    context.util = require("util")
-  }
-  
-
 // ------------------------------
 // The IIFE end
 // ------------------------------
-
-console.log(server)
-// begin(server)
-startREPL()
+  
+  begin(server)
+  return server
 })()
   
 // ------------------------------

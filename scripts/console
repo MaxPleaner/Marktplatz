@@ -1,3 +1,9 @@
 #!/usr/bin/nodejs
 
-require("../main.js")
+// Dont make this a var, it won't be exported to the REPL
+server = require("../main.js")
+
+console.log("starting REPL".green)
+var repl = require("repl")
+var context = repl.start("> ").context
+context.util = require("util")

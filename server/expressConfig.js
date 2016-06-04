@@ -1,4 +1,4 @@
-module.exports = function(expressApp) {
+module.exports = function(expressApp, express) {
 
   // Use the client/public folder for static file serving
   expressApp.use(express.static("client/public"))
