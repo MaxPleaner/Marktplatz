@@ -1,3 +1,6 @@
+// Use the client/public folder for static file serving
+expressApp.use(express.static("client/public"))
+
 // Use layout files and EJS templating
 var expressLayouts = require("express-ejs-layouts")
 expressApp.use(expressLayouts)

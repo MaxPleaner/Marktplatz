@@ -1,4 +1,6 @@
-global.app.Models = exports = {}
+var Sequelize = require("sequelize")
+
+var Models = exports = {}
 
 var databaseUrl = `\
 postgres://\
@@ -7,14 +9,14 @@ ${process.env.POSTGRES_USERNAME}\
 @localhost:5432\
 /${process.env.POSTGRES_DB_NAME}
 `
-app.sequelize = new Sequelize(databaseUrl)
-app.ORM = {}
+server.sequelize = new Sequelize(databaseUrl)
+server.ORM = {}
 
-require("./models/user.js") // defines app.Models.User and app.ORM.User
+require("./models/user.js") // defines server.Models.User and server.ORM.User
 
-app.Models.syncModels = () => {
+server.Models.syncModels = () => {
   return new Promise(function (resolve, reject) {
-    app.ORM.User.sync({force: false}).then(function(){
+    server.ORM.User.sync({force: false}).then(function(){
       resolve()
     })
   })

@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async": "^2.0.0-rc.5",
+    "async-extend-defaults": "0.0.1",
     "babel-cli": "^6.9.0",
     "babel-plugin-transform-dirname-filename": "^1.1.0",
     "babel-preset-es2015": "^6.9.0",

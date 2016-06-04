@@ -1,1 +1,3 @@
-Main page
+<% if session.currentUser %>
+  <% include auth.ejs %>
+<% end %>
