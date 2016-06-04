@@ -1,4 +1,4 @@
-RequestObjects = exports = {}
+RequestObjects = module.exports = {}
 
 RequestObjects.userParams = function(req) {
   return {

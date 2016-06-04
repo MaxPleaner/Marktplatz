@@ -1,5 +1,9 @@
 module.exports = function(expressApp, express) {
 
+  // LiveReload is not workin for some reason
+  // var livereload = require('express-livereload')
+  // livereload(expressApp, config={})
+
   // Use the client/public folder for static file serving
   expressApp.use(express.static("client/public"))
 

@@ -4,23 +4,6 @@
 
 var server = module.exports = (function() {
 
-// ------------------------------
-// The method which starts it all
-// ------------------------------
-
-function begin(server) {
-  server.Models.syncModels(server.ORM).then(function(){
-    console.log("synced models".green)
-    if (require.main === module) {
-      startServer(server)
-    } else { startServer(server) }
-  })  
-}
-
-// ------------------------------
-// But first ...
-// ------------------------------
-
   require("colors")
   var _ = require("underscore")
 
@@ -68,11 +51,23 @@ function begin(server) {
       url: url, port: port
     }
   }
+
+  // ------------------------------
+  // The method which starts it all
+  // ------------------------------
+
+  function begin(server) {
+    server.Models.syncModels(server.ORM).then(function(){
+      console.log("synced models".green)
+      if (require.main === module) {
+        startServer(server)
+      }
+    })  
+  }
   
 // ------------------------------
 // The IIFE end
 // ------------------------------
-  
   begin(server)
   return server
 })()
