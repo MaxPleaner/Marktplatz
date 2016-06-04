@@ -1,4 +1,7 @@
-export POSTGRES_USERNAME=ChangeThis
-export POSTGRES_PASSWORD=ChangeThis
-export POSTGRES_DB_NAME=ChangeThis
-export SESSION_PASSWORD=ChangeThis
+module.exports = {
+  POSTGRES_USERNAME: "change me",
+  POSTGRES_PASSWORD: "change me",
+  POSTGRES_DB_NAME: "change me",
+  SESSION_PASSWORD: "change me",
+}
+

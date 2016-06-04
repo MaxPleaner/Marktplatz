@@ -5,23 +5,41 @@
 (function() {
 
 // ------------------------------
-// 
+// The method which starts it all
+// ------------------------------
+
+function begin(server) {
+  server.Models.syncModels(server.ORM).then(function(){
+    console.log("synced models".green)
+    if (require.main === module) {
+      startServer()
+    } else {
+      startREPL()
+    }
+  })  
+}
+
+// ------------------------------
+// But first ...
 // ------------------------------
 
   require("colors")
-  var _ = require("./underscore")
+  var _ = require("underscore")
 
   // Remember to edit /server/env_vars.js before starting
   process.env = _.extend(process.env, require("./server/env_vars.js"))
   
   var server = {}
-  var models = require("./server/models.js"))
+  var models = require("./server/models.js")
+  server.sequelize = models.sequelize
+  server.ORM = models.ORM
+  server.Models = models.Models
 
   var newExpressApp = function(httpServer) {
-    var express = require('express'),
+    var express = require('express')
     var expressApp = express()
-    require("./server/expressConfig.js")
-    require("./server/routes.js")
+    expressApp = require("./server/expressConfig.js")(expressApp)
+    expressApp = require("./server/routes.js")(expressApp)
     return expressApp
   }
 
@@ -31,8 +49,8 @@
 
   var newWebsocketServer = function(httpServer) {
     var httpServer = require("http").createServer()
-    var WsServer = require('ws').Server
-    WsServer({ httpServer: httpServer })
+    var WsServerInit = require('ws').Server
+    var WsServer = WsServerInit({ httpServer: httpServer })
     return httpServer
   }
   
@@ -61,21 +79,15 @@
   }
   
 
-  server.Models.syncModels().then(function(){
-    console.log("synced models".green)
-    if (require.main === module) {
-      startServer()
-    } else {
-      startREPL()
-    }
-  })
-
 // ------------------------------
 // The IIFE end
 // ------------------------------
 
+console.log(server)
+// begin(server)
+startREPL()
 })()
-
+  
 // ------------------------------
 //
 // ------------------------------
