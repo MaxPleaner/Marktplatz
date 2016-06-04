@@ -1,0 +1,4 @@
+export POSTGRES_USERNAME=ChangeThis
+export POSTGRES_PASSWORD=ChangeThis
+export POSTGRES_DB_NAME=ChangeThis
+export SESSION_PASSWORD=ChangeThis

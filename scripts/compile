@@ -6,7 +6,7 @@ printf "${BIYellow}compiling${Color_Off}\n"
 rm ./compiled/main.js;
 npm_exec babel ./main.js --out-file ./compiled/main.js;
 
-rm ./compiled/app/routes.js;
-npm_exec babel ./app/routes.js --out-file ./compiled/app/routes.js;
+rm ./compiled/server/routes.js;
+npm_exec babel ./server/routes.js --out-file ./compiled/server/routes.js;
 
 printf "${BGreen}finished compiling${Color_Off}\n"
