@@ -5,7 +5,6 @@ server = require("../main.js")(function(server){
   console.log("starting REPL".green)
   var repl = require("repl")
   var context = repl.start("> ").context
-  console.log("here")
   context.server = server
   context.util = require("util")
 })

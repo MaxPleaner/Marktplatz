@@ -1,7 +1,3 @@
-// ------------------------------
-// Everything is wrapped in an IIFE
-// ------------------------------
-
 var server = module.exports = function(callback) {
 
   require("colors")
@@ -64,6 +60,7 @@ var server = module.exports = function(callback) {
           startServer(server)
         } else {
           server._ = _ // exports Underscore to REPL
+          console.log("to enable colors: require('colors')".rainbow)
         }
         resolve(server)
       })
