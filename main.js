@@ -2,7 +2,7 @@
 // Everything is wrapped in an IIFE
 // ------------------------------
 
-var server = module.exports = (function() {
+var server = module.exports = function(callback) {
 
   require("colors")
   var _ = require("underscore")
@@ -57,21 +57,27 @@ var server = module.exports = (function() {
   // ------------------------------
 
   function begin(server) {
-    server.Models.syncModels(server.ORM).then(function(){
-      console.log("synced models".green)
-      if (require.main === module) {
-        startServer(server)
-      }
-    })  
+    return new Promise(function(resolve, reject) {
+      server.Models.syncModels(server.ORM).then(function(){
+        console.log("synced models".green)
+        if (require.main === module) {
+          startServer(server)
+        } else {
+          server._ = _ // exports Underscore to REPL
+        }
+        resolve(server)
+      })
+    })
   }
   
 // ------------------------------
 // The IIFE end
 // ------------------------------
 
-  begin(server)
-  return server
-})()
+  begin(server).then(function(server){
+    callback(server)
+  })
+}
   
 // ------------------------------
 //

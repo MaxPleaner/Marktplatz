@@ -1,12 +1,7 @@
 var Models = module.exports = function(){
 
   var Sequelize = require("sequelize")
-  var databaseUrl = `\
-postgres://\
-${process.env.POSTGRES_USERNAME}\
-:${process.env.POSTGRES_PASSWORD}\
-@localhost:5432\
-/${process.env.POSTGRES_DB_NAME}
+  var databaseUrl = `postgres://${process.env.POSTGRES_USERNAME}:${process.env.POSTGRES_PASSWORD}@localhost:5432/${process.env.POSTGRES_DB_NAME}
   `
   var sequelize = new Sequelize(databaseUrl)
   var Models = {}
@@ -27,7 +22,7 @@ ${process.env.POSTGRES_USERNAME}\
   return {
     sequelize: sequelize, 
     ORM: ORM,
-    Models: Models
+    Models: Models,
   }
 
 }()

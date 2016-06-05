@@ -6,17 +6,11 @@ module.exports = function(sequelize, Sequelize) {
   }, {freezeTableName: true})
 
   var userModel = function(userORM) {
-    this.user = userORM
+
     this.find = function(params) {
       var password = params.password
       delete params.password
-      return new Promise(function(resolve, reject) {
-        Model.findAll({where: params}).then(function(users){
-          resolve(users)
-        }).catch(function(errors){
-          reject(errors)
-        });
-      })
+      return userORM.findAll({where: params})
     }
     
     this.login = function(user) {
@@ -24,6 +18,13 @@ module.exports = function(sequelize, Sequelize) {
         resolve(user)
       })
     }
+
+    this.register = function(user) {
+      return new Promise(function(resolve, reject) {
+        resolve(user)
+      })
+    }
+
     this.logout = function(user) {
       return new Promise(function(resolve, reject) {
         resolve(user)
@@ -33,7 +34,7 @@ module.exports = function(sequelize, Sequelize) {
   }
 
   return {
-    Models: { User: userModel },
+    Models: { User: new userModel(userORM) },
     ORM: { User: userORM },
   }
 

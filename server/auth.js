@@ -1,35 +1,25 @@
 var Auth = module.exports = function(server) {
   
-  var Models = server.Models
+  this.Models = server.Models
 
   this.login = function (params) {
-    return new Promise(function(resolve, reject) {
-      Models.User.find(params).then(function(user) {
-        Models.User.login(user).then((user) => { resolve(user) })
-      }).catch(function(errors) {
-        reject("find/login error")
-      })
+    var Models = this.Models
+    return Models.User.find(params).then(function(user) {
+      return Promise.all([user, Models.User.login(user)])
     })
   }
 
   this.logout = function (params) {
-    return new Promise(function(resolve, reject) {
-      Models.User.find(params).then(function(user) {
-        Models.User.logout(user).then((user) => { resolve(user) })
-      }).catch(function(errors) {
-        reject("find/logout error")
-      })
+    var Models = this.Models
+    return Models.User.find(params).then(function(user) {
+      return Promise.all([user, Models.User.logout(user)])
     })
   }
 
-
   this.register = function (params) {
-    return new Promise(function(resolve, reject) {
-      Models.User.find(params).then(function(user) {
-        Models.User.register(user).then((user) => { resolve(user) })
-      }).catch(function(errors) {
-        reject(errors)
-      })
+    var Models = this.Models
+    return Models.User.find(params).then(function(user) {
+      return Promise.all([user, Models.User.register(user)])
     })
   }
 
