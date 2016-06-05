@@ -1,0 +1,21 @@
+{
+  "name": "node-ws2",
+  "description": "",
+  "main": "main.js",
+  "authors": [
+    "maxpleaner <maxpleaner@gmail.com>"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "websockets",
+    "express"
+  ],
+  "homepage": "https://github.com/maxpleaner/marktplatz",
+  "moduleType": [
+    "node"
+  ],
+  "dependencies": {
+    "jquery": "^2.2.4",
+    "bootstrap": "^3.3.6"
+  }
+}
