@@ -57,8 +57,12 @@ var server = module.exports = function(callback) {
       server.Models.syncModels(server.ORM).then(function(){
         console.log("synced models".green)
         if (require.main === module) {
+          console.log("executed directly".green)
+          console.log("starting server".green)
           startServer(server)
         } else {
+          console.log("required as a module".green)
+          console.log("loading REPL".green)
           server._ = _ // exports Underscore to REPL
           console.log("to enable colors: require('colors')".rainbow)
         }
@@ -67,13 +71,13 @@ var server = module.exports = function(callback) {
     })
   }
   
-// ------------------------------
-// The IIFE end
-// ------------------------------
-
   begin(server).then(function(server){
     callback(server)
   })
+}
+
+if (require.main === module) {
+  server()
 }
   
 // ------------------------------

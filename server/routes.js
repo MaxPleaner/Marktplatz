@@ -10,6 +10,7 @@ module.exports = function(expressApp, server) {
   expressApp.post("/register", function(req, res){
     ORM.User.create({firstName: "asd"}).then(function(user){
       Auth.register(userParams(req)).then(function(user){
+        req.session.sessionToken = user.sessionToken
         res.send({user: user})
       }).catch(function(errors){
         res.send({errors: errors})
@@ -19,6 +20,7 @@ module.exports = function(expressApp, server) {
 
   expressApp.post("/login", function(req, res){
     Auth.login(userParams(req)).then(function(user){
+      req.session.sessionToken = user.sessionToken
       res.send({user: user})
     }).catch(function(errors){
       res.send({errors: errors})
