@@ -1,10 +1,11 @@
 RequestObjects = module.exports = {}
 
-RequestObjects.userParams = function(req) {
+RequestObjects.userParams = function(params) {
   return {
-    sessionToken: req.session.sessionToken,
-    username: req.body.username,
-    password: req.body.password,
-    email: req.body.email,
+    sessionToken: params.sessionToken,
+    username: params.username,
+    password: params.password,
+    password_confirmation: params.password_confirmation,
+    email: params.email,
   }
 }

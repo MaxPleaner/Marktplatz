@@ -20,7 +20,13 @@ module.exports = function(sequelize, Sequelize, _) {
       type: Sequelize.VIRTUAL
     },
     email: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: true,
+      validate: {
+        isEmail: true,
+        notEmpty: true,
+        len: [1,255]
+      }
     },
     sessionToken: {
       type: Sequelize.STRING,
@@ -32,29 +38,57 @@ module.exports = function(sequelize, Sequelize, _) {
       unique: true,
       validate: {
         notEmpty: true,
+        len: [1,50]
       }
     },
-  }, {freezeTableName: false})
+  }, {
+    freezeTableName: false,
+    instanceMethods: {
+      authenticate: function(value){
+        if (bcrypt.compareSync(value, this.password_digest))
+          return this;
+        else
+          return false;
+      }
+    }
+  })
+
+var hasSecurePassword = function(user, options, callback) {
+  if (user.password != user.password_confirmation) {
+    throw new Error("Password confirmation doesn't match Password");
+  }
+  bcrypt.hash(user.get('password'), 10, function(err, hash) {
+    if (err) return callback(err);
+    user.set('password_digest', hash);
+    return callback(null, options);
+  });
+};
+
+userORM.beforeCreate(function(user, options, callback) {
+  if (user.email) { user.email = user.email.toLowerCase() }
+  if (user.password)
+    hasSecurePassword(user, options, callback);
+  else
+    return callback(null, options);
+})
+userORM.beforeUpdate(function(user, options, callback) {
+  if (user.email) { user.email = user.email.toLowerCase() }
+  if (user.password)
+    hasSecurePassword(user, options, callback);
+  else
+    return callback(null, options);
+})
+
 
   var userModel = function(_, userORM) {
 
-    this._ = _
-
-    this.crypto = require('crypto'),
-    this.cryptoAlgorithm = 'aes-256-ctr',
-    this.cryptoGlobalPassword = process.env.CryptoGlobalPassword;
-    this.cipher = this.crypto.createCipher(
-      this.cryptoAlgorithm, this.cryptoGlobalPassword
-    )
-    this.decipher = this.crypto.createDecipher(
-      this.cryptoAlgorithm, this.cryptoGlobalPassword
-    )
+    var crypto = require('crypto')
 
     this.userORM = userORM
     
     this.find = function(params) {
       var params = this._.extend({}, params) // a shallow clone
-      delete params.password
+      var params = this.publicAttrs(params) // sanitize
       return new Promise(function(resolve, reject) {
         return this.userORM.findAll({where: params})
           .then(function(users){
@@ -82,13 +116,19 @@ module.exports = function(sequelize, Sequelize, _) {
       return new Promise(function(resolve, reject) {
         var userRecord = this.findOne(params)
           .then(function(user){
-            var sessionToken = this.newSessionToken()
-            return 
-              user.updateAttributes({
-                sessionToken: sessionToken
-              })
-              .then(function(user){return resolve(user)})
-              .catch(function(err){return reject(err)})
+            if (userRecord.authenticate(params.password)) {
+              var sessionToken = this.newSessionToken()
+              return 
+                user.updateAttributes({
+                  sessionToken: sessionToken
+                })
+                .then(function(user){
+                  return resolve(this.publicAttrs(user))
+                }.bind(this))
+                .catch(function(err){return reject(err)})
+            } else {
+              resolve("incorrect password")
+            }
           }.bind(this))
           .catch(function(err){return reject(err)})
       }.bind(this))
@@ -98,16 +138,23 @@ module.exports = function(sequelize, Sequelize, _) {
       return new Promise(function(resolve, reject) {
         return this.findOne(params)
           .then(
-            function(){
+          function(){
               return reject("user already exists")
-            }.bind(this),
+            }.bind(this))
+          .catch(
             function(err){
               return this.userORM.create(params)
-                .then(function(user){return resolve(user)})
+                .then(function(user){
+                  var sessionToken = this.newSessionToken();
+                  return user.updateAttributes({sessionToken: sessionToken})
+                    .then(function(){
+                      return resolve(this.publicAttrs(user))
+                    }.bind(this))
+                    .catch(function(err){return reject(err)})
+                }.bind(this))
                 .catch(function(err){return reject(err)})
             }.bind(this)
           )
-          .catch(function(err){return reject(err)})
       }.bind(this))
     }
 
@@ -123,6 +170,14 @@ module.exports = function(sequelize, Sequelize, _) {
       }.bind(this))
     }
 
+    this.publicAttrs = function(user) {
+      var user = _.extend({}, user.dataValues)
+      delete user.password
+      delete user.password_confirmation
+      delete user.password_digest
+      return user
+    }
+
     this.setNullSession = function(user){
       if (user) {
         return Promise.all([
@@ -134,7 +189,9 @@ module.exports = function(sequelize, Sequelize, _) {
     }
 
     this.newSessionToken = function() {
-      return "123456789"
+      var sha = crypto.createHash("sha256");
+      sha.update(Math.random().toString());
+      return sha.digest("hex");
     }
 
   }

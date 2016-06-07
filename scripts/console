@@ -10,12 +10,15 @@ var server = require("../main.js")(function(server){
   var context = repl.start("> ").context
 
   // ----------------------------------------
-  // Sets variables which are available to REPL
+  // Sets variables wh  ich are available to REPL
   // ----------------------------------------
   context.server = server
   context.d = context.debug = function(x) { console.log(x) }
   context.Models = server.Models
   context.ORM = server.ORM
+  context._ = server._
+  context.nullifyEmptyStringVals = server
+                                   .nullifyEmptyStringVals
   context.User = server.Models.User
   context.UserORM = server.ORM.User
   context.util = require("util")

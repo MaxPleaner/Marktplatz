@@ -1,18 +1,35 @@
+// Exports server object, which is a namespace for other modules
+// such as Auth, Models, ORM, etc.
+// Begin the server with server.begin(callback)
+// the callback is passed a modified server object
 var server = module.exports = function(callback) {
 
+  
+  var server = {}
+
   require("colors")
-  var _ = require("underscore")
-
-
-  // process.on("unhandledRejection", function(reason, p){
-      // console.log("Unhandled", reason, p); // log all your errors, "unsuppressing" them.
-      // throw new Error(reason); // optional, in case you want to treat these as errors
-  // }); 
+  server._ = require("underscore")
+  var _ = server._
 
   // Remember to edit /server/env_vars.js before starting
   process.env = _.extend(process.env, require("./server/env_vars.js"))
   
-  var server = {}
+  server.nullifyEmptyStringVals = function(params) {
+    var params = _.extend({}, params)
+    for (var key of Object.keys(params)) {
+      val = params[key]
+      if ((typeof val == 'string') && (val.length > 0)) {} 
+      else { delete params[key] }
+    };
+    return params;
+  }
+  var nullifyEmptyStringVals = server.nullifyEmptyStringVals
+
+  process.on("unhandledRejection", function(reason, p){
+      throw new Error(reason.stack);
+  }); 
+
+  
   var models = require("./server/models.js")(_)
   server.sequelize = models.sequelize
   server.ORM = models.ORM
@@ -87,47 +104,3 @@ var server = module.exports = function(callback) {
 if (require.main === module) {
   server(function(){})
 }
-  
-// ------------------------------
-//
-// ------------------------------
-
-//server.js or whatever
-//var express = require('express')
-//var app = express()
-//var server = require('http').Server(app)
-
-//app.use(express.static('site'))
-
-//module.exports = server;
-
-//main.js
-//var server = require('./server')
-//var connectWebScoket = require('./ws')
-
-//server.listen(pot, function() {
-//  connectWebSocket(port)
-//  startSync(server)
-//})
-
-//connectWebSocket.js
-//var 
-
-
-//models/sequelize.js
-//module.exports = function (postgresUrl) {
-// Sequelize.connect(postgresUrl)
-// return this;
-//}
-
-
-//models/sequelize
-
-// module.exports = function("user", sequelize) sequelize.define("user", {
-//     username: {type: Sequelize.STRING, fieldName: "username"},
-//     sessionToken: {type: Sequelize.STRING}
-//   }, {freezeTableName: false, force: true})
-
-//constants or deps.js
-//export.sequelize = require('')
-
