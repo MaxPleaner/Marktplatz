@@ -3,6 +3,7 @@ module.exports = {
   POSTGRES_PASSWORD: "max_pg_password",
   POSTGRES_DB_NAME: "marktplatz",
   SESSION_PASSWORD: "password"  ,
+  CryptoGlobalPassword: "d6F3Efeq"
 }
 
 

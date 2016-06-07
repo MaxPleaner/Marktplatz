@@ -7,10 +7,11 @@ var server = module.exports = function(callback) {
   process.env = _.extend(process.env, require("./server/env_vars.js"))
   
   var server = {}
-  var models = require("./server/models.js")
+  var models = require("./server/models.js")(_)
   server.sequelize = models.sequelize
   server.ORM = models.ORM
   server.Models = models.Models
+  server.Auth = require("./server/auth.js")(server)
 
   var newExpressApp = function(httpServer, server) {
     var express = require('express')
@@ -37,7 +38,7 @@ var server = module.exports = function(callback) {
     var WebsocketServer = newWebsocketServer(HttpServer)
     var expressApp = newExpressApp(HttpServer, server)
     HttpServer.on('request', expressApp);
-    var url = require('url')
+    var url = require('url')    
     var port = 4080
     HttpServer.listen(port, function () {
       console.log(`Listening on ${HttpServer.address().port}`.green)
@@ -52,13 +53,13 @@ var server = module.exports = function(callback) {
   // The method which starts it all
   // ------------------------------
 
-  function begin(server) {
+  server.begin = function begin(startFromREPL) {
+    var server = this;
     return new Promise(function(resolve, reject) {
       server.Models.syncModels(server.ORM).then(function(){
         console.log("synced models".green)
-        if (require.main === module) {
+        if ((require.main === module) || startFromREPL) {
           console.log("executed directly".green)
-          console.log("starting server".green)
           startServer(server)
         } else {
           console.log("required as a module".green)
@@ -71,7 +72,7 @@ var server = module.exports = function(callback) {
     })
   }
   
-  begin(server).then(function(server){
+  server.begin().then(function(server){
     callback(server)
   })
 }

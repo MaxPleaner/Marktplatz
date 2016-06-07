@@ -3,5 +3,6 @@ module.exports = {
   POSTGRES_PASSWORD: "change me",
   POSTGRES_DB_NAME: "change me",
   SESSION_PASSWORD: "change me",
+  CryptoGlobalPassword: "12345678"
 }
 
