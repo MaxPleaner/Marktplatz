@@ -83,11 +83,11 @@ userORM.beforeUpdate(function(user, options, callback) {
   var userModel = function(_, userORM) {
 
     var crypto = require('crypto')
-
+    var _ = _
     this.userORM = userORM
     
     this.find = function(params) {
-      var params = this._.extend({}, params) // a shallow clone
+      var params = _.extend({}, params) // a shallow clone
       var params = this.publicAttrs(params) // sanitize
       return new Promise(function(resolve, reject) {
         return this.userORM.findAll({where: params})
@@ -108,26 +108,25 @@ userORM.beforeUpdate(function(user, options, callback) {
           .then(function(users){
             return resolve(users[0])
           }.bind(this))
-          .catch(function(e){return reject(e)})
+          .catch(function(e){return reject("User not found")})
       }.bind(this))
     }
 
     this.login = function(params) {
       return new Promise(function(resolve, reject) {
-        var userRecord = this.findOne(params)
+        return this.findOne(params)
           .then(function(user){
-            if (userRecord.authenticate(params.password)) {
+            if (user.authenticate(params.password)) {
               var sessionToken = this.newSessionToken()
-              return 
-                user.updateAttributes({
+              return user.updateAttributes({
                   sessionToken: sessionToken
-                })
-                .then(function(user){
-                  return resolve(this.publicAttrs(user))
-                }.bind(this))
-                .catch(function(err){return reject(err)})
+              })
+              .then(function(user){
+                return resolve(this.publicAttrs(user))
+              }.bind(this))
+              .catch(function(err){return reject(err)})
             } else {
-              resolve("incorrect password")
+              return resolve("incorrect password")
             }
           }.bind(this))
           .catch(function(err){return reject(err)})
