@@ -6,9 +6,9 @@ First go to `scripts/env_setup.sh.example` and fill in the required environment 
 
 There are two ways to start the server:
 - using babel to compile. Use `scripts/compile_and_run` to do this.
-- using Node without compilation. `npm start` accomplishes this, or `nodejs main.js`. To do this, the installed Node version must be modern enough to support ES6 features (promises, arrow functions, template strings, etc)
+- using Node without compilation. `npm start` accomplishes this, or `nodejs main.js`. To do this, the installed Node version must be modern enough to support ES6 features (promises, arrow functions, template strings, etc). I'm using Node `5.11.1`.
 
-The app can be loaded into a REPL using `scripts/console`.
+The app can be loaded into a REPL using `scripts/console`. All the app's code is namespaced under `server`, which is available as a variable in the REPL. See `scripts/console` for other available variables (everything defined on the `context` object.)
 
 `babel_node` can also load the app into a REPL using `scripts/babel_repl`.
 

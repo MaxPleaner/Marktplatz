@@ -1,9 +1,40 @@
 module.exports = function(sequelize, Sequelize, _) {
 
-  var userORM = sequelize.define("user", {
-    username: {type: Sequelize.STRING, fieldName: "username"},
-    sessionToken: {type: Sequelize.STRING}
-  }, {freezeTableName: false, force: true})
+  var bcrypt = require("bcrypt")
+
+  var userORM = sequelize.define("users", {
+    password_digest: {
+      type: Sequelize.STRING,
+      validate: {
+        notEmpty: true
+      }
+    },
+    password: {
+      type: Sequelize.VIRTUAL,
+      allowNull: false,
+      validate: {
+        notEmpty: true
+      }
+    },
+    password_confirmation: {
+      type: Sequelize.VIRTUAL
+    },
+    email: {
+      type: Sequelize.STRING
+    },
+    sessionToken: {
+      type: Sequelize.STRING,
+      unique: true
+    },
+    username: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        notEmpty: true,
+      }
+    },
+  }, {freezeTableName: false})
 
   var userModel = function(_, userORM) {
 
@@ -18,97 +49,78 @@ module.exports = function(sequelize, Sequelize, _) {
     this.decipher = this.crypto.createDecipher(
       this.cryptoAlgorithm, this.cryptoGlobalPassword
     )
-    
-    this.errors = []
 
+    this.userORM = userORM
+    
     this.find = function(params) {
       var params = this._.extend({}, params) // a shallow clone
       delete params.password
       return new Promise(function(resolve, reject) {
-        return userORM.findAll({where: params}).then(function(users){
-          if (users.length > 0) {
-            resolve(users)
-          } else {
-            this.errors.push("no users found")
-            reject(this.errors)
-          }   
-        }.bind(this))
+        return this.userORM.findAll({where: params})
+          .then(function(users){
+            if (users.length > 0) {
+              return resolve(users)
+            } else {
+              return reject("no users found")
+            }   
+          }.bind(this))
+          .catch(function(err){return reject(err)})
       }.bind(this))
     }
 
     this.findOne = function(params) {
       return new Promise(function(resolve, reject) {
-        return this.find(params).then(function(users){
-          if (users.length > 0) {
-            resolve(users.first)
-          } else {
-            this.errors.push("no user found")
-            reject(this.errors)
-          }   
-        }.bind(this))
+        return this.find(params)
+          .then(function(users){
+            return resolve(users[0])
+          }.bind(this))
+          .catch(function(e){return reject(e)})
       }.bind(this))
     }
-    
+
     this.login = function(params) {
       return new Promise(function(resolve, reject) {
-        var userRecord = this.findOne(params).then(function(user){
-          var loginOK = this.isCorrectPassword(user, params.password)
-          if (loginOK) {
+        var userRecord = this.findOne(params)
+          .then(function(user){
             var sessionToken = this.newSessionToken()
-            return Promise.all([
-              user,
+            return 
               user.updateAttributes({
                 sessionToken: sessionToken
               })
-            ])
-          } else {
-            this.errors.push("incorrect password, cant login")
-            reject(this.errors)
-          }
-        }.bind(this))
+              .then(function(user){return resolve(user)})
+              .catch(function(err){return reject(err)})
+          }.bind(this))
+          .catch(function(err){return reject(err)})
       }.bind(this))
     }
 
     this.register = function(params) {
       return new Promise(function(resolve, reject) {
-        console.log(this.findOne(params))
-        console.log("...")
-        this.findOne(params).then(function(){
-          this.errors.push(
-            "cannot register, this user already exists"
+        return this.findOne(params)
+          .then(
+            function(){
+              return reject("user already exists")
+            }.bind(this),
+            function(err){
+              return this.userORM.create(params)
+                .then(function(user){return resolve(user)})
+                .catch(function(err){return reject(err)})
+            }.bind(this)
           )
-          reject(this.errors)
-        }.bind(this), function(){
-          if (this.invalidPassword(params.password)) {
-            this.errors.push("password is not 6-50 characters")
-            reject(this.errors)
-          }
-          console.log(params)
-          console.log(params.password)
-          var password =  this.encryptPassword(params.password)
-          params.sessionToken = this.newSessionToken();
-          console.log(`params.sessionToken - ${params.sessionToken}`)
-          UserORM.create(params).then(function(user){
-            resolve(user)
-          })
-        }.bind(this))
+          .catch(function(err){return reject(err)})
       }.bind(this))
     }
 
     this.logout = function(params) {
       return new Promise(function(resolve, reject) {
-        this.findOne(params).then(function(user){
-          return Promise.all([user, this.setNullSession(user)])
-        }.bind(this), function(){
-          this.errors.push("could not find user to logout")
-          reject(this.errors)
-        }.bind(this))
+        return this.findOne(params)
+          .then(function(user){
+            return Promise.all([user, this.setNullSession(user)])
+          }.bind(this))
+          .catch(function(){
+            return reject("could not find user to logout")
+          }.bind(this))
       }.bind(this))
-    }
-
-    this.invalidPassword = function(password){
-      return !password || (password.length < 6) ||
-      (password.length > 50)
     }
 
     this.setNullSession = function(user){
@@ -117,25 +129,8 @@ module.exports = function(sequelize, Sequelize, _) {
           user, user.updateAttributes({sessionToken: undefined})
         ])
       } else {
-        this.errors.push("could not null session on undefined user")
-        Promise.reject(this.errors)
+        return Promise.reject("could not null session on undefined user")
       }
-    }
-
-    this.encryptPassword = function(password){
-      var crypted = this.cipher.update(password,'utf8','hex')
-      crypted += cipher.final('hex');
-      return crypted;
-    }
-
-    this.decryptPassword = function(passwordHash) {
-      var dec = this.decipher.update(text,'hex','utf8')
-      dec += decipher.final('utf8');
-      return dec;
-    }
-
-    this.isCorrectPassword = function(user, password) {
-      return user.password == this.decryptPassword(password) 
     }
 
     this.newSessionToken = function() {
@@ -143,7 +138,6 @@ module.exports = function(sequelize, Sequelize, _) {
     }
 
   }
-
 
   return {
     Models: { User: new userModel(_, userORM) },
