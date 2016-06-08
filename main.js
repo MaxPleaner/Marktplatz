@@ -10,7 +10,7 @@ var server = module.exports = function(callback) {
   require("colors")
   server._ = require("underscore")
   var _ = server._
-
+  var curry = server.curry = require("curry")
   // Remember to edit /server/env_vars.js before starting
   process.env = _.extend(process.env, require("./server/env_vars.js"))
 
@@ -51,7 +51,7 @@ var server = module.exports = function(callback) {
   var newWebsocketServer = server.newWebsocketServer = function(httpServer) {
     var WsServerInit = require('ws').Server
     var WsServer = new WsServerInit({ server: httpServer })
-    return require("./server/websockets.js")(WsServer)
+    return require("./server/websockets.js")(WsServer, server)
   }
   
   var startServer = function(server) {

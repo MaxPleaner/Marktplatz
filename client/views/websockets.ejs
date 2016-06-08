@@ -1,0 +1,8 @@
+<script>
+
+  var ws = new WebSocket("ws://localhost:4080")
+  ws.addEventListener("message", function(e) {
+      var msg = e.data;
+      console.log(msg)
+  });
+</script>

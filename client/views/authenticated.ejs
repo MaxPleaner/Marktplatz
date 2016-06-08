@@ -1,6 +1,7 @@
 <%- contentFor("body")  %>
 Authenticated!
 
+
 <form action="/logout" method="POST">
   <input type="submit" value="logout">
 </form>
@@ -8,3 +9,11 @@ Authenticated!
 <%- contentFor("head")  %>
 
 <%- contentFor("scripts")  %>
+<script>
+
+  var sessionToken = "<%- user.sessionToken %>"
+  var websocketOnOpen = ws.onopen = function() {
+    ws.send(JSON.stringify({cmd: "login", sessionToken: sessionToken}))
+  }
+
+</script>

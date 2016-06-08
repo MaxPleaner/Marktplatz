@@ -1,21 +1,16 @@
 <!doctype html>
-
 <html lang="en">
-
   <head>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <%-head%>
   </head>
-
   <body>
     <h1>Marktplatz</h1> <hr>
     <%-body%>
+    <%- include views/websockets.ejs %>
+    <!-- load page-specific scripts after websockets -->
     <%-scripts%>
-    <script>
-    var ws = new WebSocket("ws://localhost:4080")
-    </script>
   </body>
-
 </html>

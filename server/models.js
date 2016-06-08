@@ -12,7 +12,7 @@ var Models = module.exports = function(_){
   ORM.User = user.ORM.User
 
   Models.syncModels = function(ORM) {
-    return Promise.all([null, ORM.User.sync({force: true})])
+    return Promise.all([null, ORM.User.sync({force: false})])
   }
 
   return {
