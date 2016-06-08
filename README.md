@@ -1,3 +1,31 @@
+## What is this
+
+While this was primarily build as a learning excercise, my goal was to end up with something that's at least a little interesting and potentially useful.
+
+First a user registers/logs in, then they are connected to the server via Websockets. Their location is sent to the server and subsequently pushed to all connected clients. All clients are updated with the locations of all other clients, and this location data is plotted on a Google Map. 
+
+If a user clicks another user's icon on the map, a "profile box" pops up for the selected user.
+
+Users are able to edit their own profiles, and any change they make will be visiblle to all connected clients within 5 seconds. 
+
+On 5 second intervals, users' locations are pinged to the server and all connected clients' see their maps update to show any change. 
+
+## How was it built
+
+The server is written in ES6 Javacript, but can run on older platforms as well via [Babel](/https://babeljs.io/).
+
+There are two web servers running concurrently:  
+  1. [Express.js](http://expressjs.com/) is the "main" server which connects to the database and serves HTML pages
+  2. [https://github.com/websockets/ws] provides a Websocket server
+
+[Sequelize](http://docs.sequelizejs.com/en/latest/) is a promise-based ORM used with Express.
+
+For the client, [Bower](http://bower.io/) is used as a package manager and the standard [HTML5 Websocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) is used. [Google Maps Javascript API](https://developers.google.com/maps/documentation/javascript/) is used along with [HTML5 geolocation](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation)
+
+
+
+
+
 ## How to run this
 
 _Note that all the following commands should be run from within the repo's root directory. In other words, don't `cd` anywhere else before running them._
