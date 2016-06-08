@@ -4,12 +4,24 @@
 
     var sessionToken = $("#sessionToken").attr("value")
 
+    window.markers = {}
+
     function geolocate(successFn, errFn) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((pos) => {
           successFn([pos.coords.latitude, pos.coords.longitude])
         }, errFn)
       }
+    }
+
+    function nullifyEmptyStringVals (obj) {
+      var obj = _.extend({}, obj)
+      for (var key of Object.keys(obj)) {
+        val = obj[key]
+        if ((typeof val == 'string') && (val.length == 0)) { delete obj[key]
+        } 
+      };
+      return obj;
     }
 
     function onWsOpen (e) {
@@ -24,50 +36,72 @@
           loginSuccess();
           break;
         case "mapData":
-          console.log("mapData")
           addMapData(data.users)
           break;
         case "userChange":
-          console.log("userChange")
           userChange(data.users)
           break;
         case "userRemove":
-          console.log("userRemove")
-          userRemove(data.user)
+          userRemove(data.users)
           break;
       }
     }
 
+    var $profileSaved = $("#profileSaved")
+
+    function profileSaved() {
+      $profileSaved.css("display", "true")
+      setTimeout(function(){
+        $profileSaved.css("display", "false")
+      }, 5000)
+    }
+
+    var $username = $("#username")
+    var $profileText = $("#profileForm textarea")
+
+    function userObj (coords) {
+      return nullifyEmptyStringVals({
+        username: $username.attr("value"),
+        sessionToken: sessionToken,
+        latitude: coords[0],
+        longitude: coords[1],
+        profileText: $profileText.val()
+      })
+    }
+
+    function mapPing (coords) {
+      var user = userObj(coords)
+      ws.send(JSON.stringify( { cmd: "mapPing", user: user } ));
+      if (typeof(user.profileText) == 'string') { profileSaved() }
+    }
+ 
     function loginSuccess () {
-      geolocate(function(coords) {
-        ws.send(JSON.stringify({
-          cmd: "loginConfirm",
-        }))
-        window.setInterval(function(){
-          ws.send(JSON.stringify({cmd: "mapPing", user: {
-            username: $("#username").attr("value"),
-            sessionToken: sessionToken,
-            latitude: coords[0],
-            longitude: coords[1]
-          }}));
-        }, 5000)
-      }, function(err) {console.log("err: " + err)})
+      window.setInterval(function() {
+          geolocate(function(coords) {
+            ws.send(JSON.stringify( { cmd: "loginConfirm" } ))
+            mapPing(coords)
+          }, function(err) {console.log("err: " + err)})
+      }, 5000)
     }
   
     function addMapData (users) {
       users.forEach(function(user){
-        mapHelpers.appendToMap(user)
+        console.log("add Map Data")
+        markers = mapHelpers.appendToMap(markers, user)
       })
     }
 
     function userChange (users) {
       users.forEach(function(user){
-        mapHelpers.userChange(user)
+        markers = mapHelpers.removeFromMap(markers, user)
+        markers = mapHelpers.appendToMap(markers, user)
       })
     }
 
-    function userRemove (user) {
-      mapHelpers.removeFromMap(user)
+    function userRemove (users) {
+      users.forEach(function(user){
+        markers = mapHelpers.removeFromMap(markers, user)
+      })
     }
 
     function initWebsockets () {

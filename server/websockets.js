@@ -28,6 +28,13 @@ var WebsocketServer = module.exports = function(wsServer, server){
     openWs.send(JSON.stringify({cmd: "loginSuccess", sessionToken: sessionToken}))
   }
 
+  function loginConfirm(openWs) {
+    openWs.send(JSON.stringify({
+      cmd: "mapData",
+      users: mapData()
+    }))
+  }
+  
   function sendToAll (data) {
     var wsList = wsServer.connections
     for (var key of Object.keys(wsList)) {
@@ -39,31 +46,25 @@ var WebsocketServer = module.exports = function(wsServer, server){
     var data = []
     var wsList = wsServer.connections
     for (var key of Object.keys(wsList)) {
-      if (wsList[key].user) {
-        var user = {}
-        user.latitude =  wsList[key].user.latitude
-        user.longitude =  wsList[key].user.longitude
-        user.username =  wsList[key].user.username
-        data.push(user)
-      }
+      var user = wsList[key].user
+      if (user) { data.push(_.extend({}, user)) }
     }
     return data
   }
 
-  function loginConfirm(openWs) {
-    openWs.send(JSON.stringify({
-      cmd: "mapData",
-      users: mapData()
-    }))
-  }
 
   function userRemove(username) {
-    sendToAll({cmd: "userRemove", user: { username: username }})
+    sendToAll({cmd: "userRemove", users: [{ username: username }]})
+  }
+
+  function setCoords(user) {
+    user.latitude = user.latitude * Math.random()
+    user.longitude = user.longitude * Math.random()
+    return user
   }
 
   function mapPing(openWs, user) {
-    user.latitude = user.latitude * Math.random()
-    user.longitude = user.longitude * Math.random()
+    user = setCoords(user)
     var wsList = wsServer.connections
     var sessionToken = user.sessionToken
     delete user.sessionToken
@@ -78,7 +79,6 @@ var WebsocketServer = module.exports = function(wsServer, server){
       case "login":
         login(openWs, msg.sessionToken)
         break;
-      case "loginConfirm":
         loginConfirm(openWs)
         break;
       case "mapPing":

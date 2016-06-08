@@ -3,7 +3,6 @@
 // Begin the server with server.begin(callback)
 // the callback is passed a modified server object
 var server = module.exports = function(callback) {
-
   
   var server = {}
 

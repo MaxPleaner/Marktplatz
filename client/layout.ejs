@@ -7,6 +7,8 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/better-curry/index.js"></script>
+    <script src="bower_components/underscore/underscore-min.js"></script>
     <style>
       html, body {
         height: 100%;
@@ -20,6 +22,9 @@
     <h1>Marktplatz</h1> <hr>
     <%-body%>
     <%- include views/websockets.ejs %>
+    <script>
+      window.curry = BetterCurry.wrap
+    </script>
     <!-- load page-specific scripts after websockets -->
     <%-scripts%>
   </body>

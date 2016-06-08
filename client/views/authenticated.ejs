@@ -18,6 +18,22 @@ Authenticated!
   style="display: none">
   </span>
 
+  <span
+  id="profileText"
+  value="<%- user.profileText %>"
+  style="display: none">
+  </span>
+
+<form id="profileForm" action="#">
+  <textarea cols="30" rows="10"></textarea>
+</form>
+
+<span
+  id="profileSaved"
+  style="display: none">
+Saved
+</span>
+
 <%- contentFor("head")  %>
 <style>
   #map {
@@ -30,27 +46,35 @@ Authenticated!
 <%- contentFor("scripts")  %>
 
 <script>
-    var map;
-    var mapHelpers = {}
-    var markers = {}
+    window.map;
+    window.mapHelpers = {}
 
-    mapHelpers.appendToMap = function(user) {
-      var marker = markers[user.username] = new google.maps.Marker({
+    mapHelpers.onMarkerClicked = function(marker) {
+      var username = marker.marker.title
+      var profileText = marker.profileText
+    }
+    
+    mapHelpers.appendToMap = function(markers, user) {
+      var marker =  new google.maps.Marker({
         position: { lat: user.latitude, lng: user.longitude },
         map: map,
         title: user.username
       })
-      marker.setMap(map)
+      markers[user.username] = { marker: marker, profileText: profileText }
+      markers[user.username].marker.setMap(map)
+      markers[user.username].marker.addListener(
+        'click', curry(mapHelpers.onMarkerClicked, markers[user.username].marker)
+      );
+      return markers
     }
 
-    mapHelpers.removeFromMap = function(user) {
-        markers[user.username].setMap(null)
-        delete markers[user.username]
-    }
 
-    mapHelpers.userChange = function(user) {
-      mapHelpers.removeFromMap(user)
-      mapHelpers.appendToMap(user)
+    mapHelpers.removeFromMap = function(markers, user) {
+      google.maps.event.clearListeners(markers[user.username].marker, 'click');
+      markers[user.username].marker.setMap(null)
+      markers[user.username].marker = null
+      delete markers[user.username]
+      return markers
     }
 
     function initMap() {

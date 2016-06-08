@@ -3,6 +3,9 @@ module.exports = function(sequelize, Sequelize, _) {
   var bcrypt = require("bcrypt")
 
   var userORM = sequelize.define("users", {
+    profileText: {
+      type: Sequelize.STRING,
+    },
     password_digest: {
       type: Sequelize.STRING,
       validate: {
