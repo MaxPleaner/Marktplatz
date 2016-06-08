@@ -1,14 +1,17 @@
 <%- contentFor("body")  %>
-Authenticated!
 
+<div class="margin">
+  
+   <b>Authenticated!</b> <br>
 
-<form action="/logout" method="POST">
-  <input type="submit" value="logout">
-</form> <br>
-
-<span
-  id="profileBox">
-</span> <br>
+  <form action="/logout" method="POST">
+    <input type="submit" value="logout">
+  </form> <br>
+  <span
+    id="profileBox">
+  </span> <br>
+  <b>Click a marker on the map to view that user's profile</b>
+</div>
 
 <div id="map"></div> <br>
 
@@ -24,11 +27,14 @@ value="<%- user.username %>"
 style="display: none; visibility: hidden;">
 </span>
 
-<form id="profileForm" action="#">
-  <textarea cols="30" rows="10">
-    <%- user.profileText  %>
-  </textarea>
-</form> <br>
+<div class="margin">
+  <b>Edit your profile (autosaves every 5 seconds)</b> <br>
+  <form id="profileForm" action="#">
+    <textarea cols="30" rows="10">
+      <%- user.profileText  %>
+    </textarea>
+  </form> <br>
+</div>
 
 
 <span
@@ -41,8 +47,29 @@ Saved
 <%- contentFor("head")  %>
 <style>
   #map {
+    margin: 20px;
+    border: 10px solid black;
+    border-radius: 20px;
     width: 500px;
     height: 500px;
+  }
+  #profileBox {
+    margin: 20px;
+    /*border: 5px solid black;*/
+    /*border-radius: 15px;*/
+    /*padding: 10px;*/
+  }
+  .username {
+    font-weight: bold;
+    font-size: 25px;
+    color: darkred;
+    font-style: underline;
+  }
+  .profileText {
+    text-decoration: italic;
+  }
+  .margin {
+    margin: 20px;
   }
 </style>
 
@@ -99,6 +126,11 @@ Saved
             markerObj: markers[user.username]
           })
       )
+      var userBox = mapHelpers.userBox(user)
+      if (userBox) {
+         // is this user already selected for the profile box
+        $profileBox.html(mapHelpers.newProfileBox(user))
+      }
       return markers
     }
 
