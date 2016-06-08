@@ -79,17 +79,17 @@ var WebsocketServer = module.exports = function(wsServer, server){
     delete user.sessionToken
     if (wsList[sessionToken].user) {cmd = "userChange"} else { cmd = "mapData" }
     wsList[sessionToken].user = user
-    if (user.profileText) {
-      persistProfileText(user)
-      .then(function(userRecord){
-        sendToAll({ cmd: cmd, users: [user] } )
+    persistProfileText(user)
+    .then(function(userRecord){
+      sendToAll({
+        cmd: cmd,
+        users: [_.extend(user, {profileText: userRecord.profileText})]
       })
-      .catch(function(err){
-        console.log(err)
-        console.log("err with map ping")
-      })
-    } else {
-      sendToAll({ cmd: cmd, users: [user] } ) }
+    })
+    .catch(function(err){
+      console.log(err)
+      console.log("err with map ping")
+    })
   }
 
   var onMessage = curry(function (openWs, message) {

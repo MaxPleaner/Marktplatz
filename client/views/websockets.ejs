@@ -72,10 +72,6 @@
 
     function mapPing (coords) {
       var user = userObj(coords)
-      if (
-        (typeof(user.profileText) == 'string') &&
-        (user.profileText != prevProfileText)
-      ) { profileSaved() } else { user.profileText = undefined}
       ws.send(JSON.stringify( { cmd: "mapPing", user: user } ));
     }
  

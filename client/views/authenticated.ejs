@@ -1,40 +1,42 @@
 <%- contentFor("body")  %>
 Authenticated!
-<div id="map"></div>
+
 
 <form action="/logout" method="POST">
   <input type="submit" value="logout">
-</form>
+</form> <br>
 
-  <span
-  id="sessionToken"
-  value="<%- user.sessionToken %>"
-  style="display: none">
-  </span>
+<span
+  id="profileBox">
+</span> <br>
 
-  <span
-  id="username"
-  value="<%- user.username %>"
-  style="display: none; visibility: hidden;">
-  </span>
+<div id="map"></div> <br>
 
-<br>
+<span
+id="sessionToken"
+value="<%- user.sessionToken %>"
+style="display: none">
+</span>
+
+<span
+id="username"
+value="<%- user.username %>"
+style="display: none; visibility: hidden;">
+</span>
 
 <form id="profileForm" action="#">
   <textarea cols="30" rows="10">
     <%- user.profileText  %>
   </textarea>
-</form>
+</form> <br>
 
-<span
-  id="profileBox">
-</span>
 
 <span
   id="profileSaved"
   style="display: none">
 Saved
 </span>
+
 
 <%- contentFor("head")  %>
 <style>
