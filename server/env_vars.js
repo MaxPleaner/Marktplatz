@@ -3,7 +3,8 @@ module.exports = {
   POSTGRES_PASSWORD: "max_pg_password",
   POSTGRES_DB_NAME: "marktplatz",
   SESSION_PASSWORD: "password"  ,
-  CryptoGlobalPassword: "d6F3Efeq"
+  CryptoGlobalPassword: "d6F3Efeq",
+  GoogleApiKey: "AIzaSyD_eSUViM3ppuaIXVzpCnkVELAPYQ2XWMY"
 }
 
 
