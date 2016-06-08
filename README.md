@@ -18,22 +18,30 @@ _Note that all the following commands should be run from within the repo's root 
       - `auth.ejs` _the login page_
       - `authenticated.ejs` _the post-login page. Also contains DOM-related Javscript_
       - `index.ejs` _wrapper for other pages_
-      - `websockets.ejs` _websocket code, not initialized until login_
+      - `websockets.ejs` _client-side websocket code, not initialized until login_
     - `layout.ejs` _layout template_
   - `compiled/` _destination for code transpiled by Babel_
   - `node_modules/` _all NPM depenencies are fully present in this folder. No need to `npm install`_
   - `scripts/` _shell scripts_
     - `lib/` _helpers, no need to execute these_
     - `babel_repl` _Starts a REPL using `babel-node`_ 
-    - `compile` _Compiles the app using Babel`
+    - `compile` _Compiles the app using Babel_
     - `compile_and_run` _Combines `compile` and `run_compiled_app` scripts_
     - `console` _Loads a REPL for the app using Node_
     - `run_compiled_app` _Runs the server from `compiled/`_
     - `start` _Starts the server with Nodejs_
   - `server/` 
-    - `models/`
-    - `auth.js`
-    - `env_vars.js.example`
-    - `expressConfig.js`
-    - `models.js`
-    - `request_objects.js`
+    - `models/` _Individual models - only User, actually_
+    - `auth.js` _Authentication module_
+    - `env_vars.js.example` _Config file, should be edited and `.example` removed_
+    - `expressConfig.js` _Express configuration_
+    - `models.js` _model definitions with Sequelize. Loads additional models from `server/models/`_
+    - `request_objects.js` _turning request parameters into objects_
+    - `routes.js` _express routes_
+    - `websockets.js` _server-side websockets code_
+  - `.babelrc` _babel config_
+  - `.bowerrc` _bower config_
+  - `bower.json` _registers this app as a Bower app_
+  - `main.js` **The entry point for this app**
+  - `package.json` _registers this app as a NPM module, lists dependencies, and defines `npm start`_
+  - 
