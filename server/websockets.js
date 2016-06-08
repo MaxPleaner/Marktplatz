@@ -63,6 +63,15 @@ var WebsocketServer = module.exports = function(wsServer, server){
     return user
   }
 
+  function persistProfileText(user) {
+    return server.Models.User.findOne({sessionToken: user.sessionToken})
+    .then(function(userRecord){
+      return userRecord.updateAttributes({
+        profileText: user.profileText
+      })
+    })
+  }
+
   function mapPing(openWs, user) {
     user = setCoords(user)
     var wsList = wsServer.connections
@@ -70,7 +79,17 @@ var WebsocketServer = module.exports = function(wsServer, server){
     delete user.sessionToken
     if (wsList[sessionToken].user) {cmd = "userChange"} else { cmd = "mapData" }
     wsList[sessionToken].user = user
-    sendToAll({ cmd: cmd, users: [user] } )
+    if (user.profileText) {
+      persistProfileText(user)
+      .then(function(userRecord){
+        sendToAll({ cmd: cmd, users: [user] } )
+      })
+      .catch(function(err){
+        console.log(err)
+        console.log("err with map ping")
+      })
+    } else {
+      sendToAll({ cmd: cmd, users: [user] } ) }
   }
 
   var onMessage = curry(function (openWs, message) {

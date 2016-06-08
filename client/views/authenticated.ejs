@@ -15,18 +15,20 @@ Authenticated!
   <span
   id="username"
   value="<%- user.username %>"
-  style="display: none">
+  style="display: none; visibility: hidden;">
   </span>
 
-  <span
-  id="profileText"
-  value="<%- user.profileText %>"
-  style="display: none">
-  </span>
+<br>
 
 <form id="profileForm" action="#">
-  <textarea cols="30" rows="10"></textarea>
+  <textarea cols="30" rows="10">
+    <%- user.profileText  %>
+  </textarea>
 </form>
+
+<span
+  id="profileBox">
+</span>
 
 <span
   id="profileSaved"
@@ -48,10 +50,38 @@ Saved
 <script>
     window.map;
     window.mapHelpers = {}
+    var $profileBox = $("#profileBox")
 
-    mapHelpers.onMarkerClicked = function(marker) {
-      var username = marker.marker.title
-      var profileText = marker.profileText
+    mapHelpers.userId = function(user) {
+      return user.username.replace(" ", "-")
+    }
+
+    mapHelpers.userBox = function(user) {
+      return $("div[attr-user='" + mapHelpers.userId(user) + "']")
+    }
+    
+    mapHelpers.newProfileBox = function(user) {
+      var $box = $("<div attr-user='" + mapHelpers.userId(user) + "'></div>")
+      $box.append(
+        $("<span class='username'></span>").text(user.username)
+      ).append($("<br>"))
+      $box.append(
+        $("<span class='profileText'></span>").text(user.profileText)
+      ).append($("<br>"))
+      return $box
+    }
+
+    mapHelpers.onMarkerClicked = function() {
+      var markerObj = this.markerObj
+      var username = markerObj.marker.title
+      var profileText = markerObj.profileText
+      var user = {
+        username: username,
+        profileText: profileText
+      }
+      if (username && profileText) {
+        $profileBox.html(mapHelpers.newProfileBox(user))
+      }
     }
     
     mapHelpers.appendToMap = function(markers, user) {
@@ -60,11 +90,13 @@ Saved
         map: map,
         title: user.username
       })
-      markers[user.username] = { marker: marker, profileText: profileText }
+      markers[user.username] = { marker: marker, profileText: user.profileText }
       markers[user.username].marker.setMap(map)
       markers[user.username].marker.addListener(
-        'click', curry(mapHelpers.onMarkerClicked, markers[user.username].marker)
-      );
+        'click', mapHelpers.onMarkerClicked.bind({
+            markerObj: markers[user.username]
+          })
+      )
       return markers
     }
 
