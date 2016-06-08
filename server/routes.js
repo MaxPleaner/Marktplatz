@@ -75,7 +75,7 @@ module.exports = function(expressApp, server) {
 
   expressApp.get("/", function(req, res){
     Auth.findCurrentUser(req)
-    .then(function(user){ console.log(user.profileText);renderIndex(req, res, user) })
+    .then(function(user){ renderIndex(req, res, user) })
     .catch(function(err){ renderIndex(req, res, false) })
   })
 

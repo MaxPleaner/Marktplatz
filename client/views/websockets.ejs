@@ -58,6 +58,7 @@
 
     var $username = $("#username")
     var $profileText = $("#profileForm textarea")
+    var prevProfileText = $profileText.val()
 
     function userObj (coords) {
       return nullifyEmptyStringVals({
@@ -71,8 +72,11 @@
 
     function mapPing (coords) {
       var user = userObj(coords)
+      if (
+        (typeof(user.profileText) == 'string') &&
+        (user.profileText != prevProfileText)
+      ) { profileSaved() } else { user.profileText = undefined}
       ws.send(JSON.stringify( { cmd: "mapPing", user: user } ));
-      if (typeof(user.profileText) == 'string') { profileSaved() }
     }
  
     function loginSuccess () {
