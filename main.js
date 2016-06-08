@@ -13,7 +13,7 @@ var server = module.exports = function(callback) {
 
   // Remember to edit /server/env_vars.js before starting
   process.env = _.extend(process.env, require("./server/env_vars.js"))
-  
+
   server.nullifyEmptyStringVals = function(params) {
     var params = _.extend({}, params)
     for (var key of Object.keys(params)) {
@@ -36,7 +36,7 @@ var server = module.exports = function(callback) {
   server.Models = models.Models
   server.Auth = require("./server/auth.js")(server)
 
-  var newExpressApp = function(httpServer, server) {
+  var newExpressApp = server.newExpressApp = function(httpServer, server) {
     var express = require('express')
     var expressApp = express()
     expressApp = require("./server/expressConfig.js")(expressApp, express)
@@ -44,15 +44,14 @@ var server = module.exports = function(callback) {
     return expressApp
   }
 
-  var newHttpServer = function() {
+  var newHttpServer = server.newHttpServer = function() {
     return require("http").createServer()
   }
 
-  var newWebsocketServer = function(httpServer) {
-    var httpServer = require("http").createServer()
+  var newWebsocketServer = server.newWebsocketServer = function(httpServer) {
     var WsServerInit = require('ws').Server
-    var WsServer = WsServerInit({ server: httpServer })
-    return httpServer
+    var WsServer = new WsServerInit({ server: httpServer })
+    return require("./server/websockets.js")(WsServer)
   }
   
   var startServer = function(server) {
@@ -62,7 +61,10 @@ var server = module.exports = function(callback) {
     var expressApp = newExpressApp(HttpServer, server)
     HttpServer.on('request', expressApp);
     var url = require('url')    
-    var port = 4080
+    // to include port as an argument variable,
+    // the script must be run as "nodejs main.js",
+    // not npm start or scripts/start
+    var port = process.argv[2] || 4080
     HttpServer.listen(port, function () {
       console.log(`Listening on ${HttpServer.address().port}`.green)
     })
