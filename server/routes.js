@@ -23,30 +23,60 @@ module.exports = function(expressApp, server) {
     } else { return [errorObject] }
   }
 
+  var renderIndex = function(req, res, user) {
+    res.render("views/index.ejs", { session: req.session, user: user })
+  }
+
   expressApp.post("/register", function(req, res){
-    Auth.register(userParams(params(req)))
+    Auth.findCurrentUser(req)
+    .then(function(user){
+      res.send({errors: "cant register: already logged in"})
+    })
+    .catch(function(err){
+      Auth.register(userParams(params(req)))
       .then(function(user){
         req.session.sessionToken = user.sessionToken
-        res.send({user: user})
+        res.redirect("/")
       })
       .catch(function(errors){
+        console.log(errorString(errors))
         res.send({errors: errorString(errors)})
       })
+    })
   })
 
   expressApp.post("/login", function(req, res){
-    Auth.login(userParams(params(req)))
+    Auth.findCurrentUser(req)
+    .then(function(user){
+      res.send({errors: "can't log in: already logged in"})
+    })
+    .catch(function(err){
+      Auth.login(userParams(params(req)))
       .then(function(user){
         req.session.sessionToken = user.sessionToken
-        res.send({user: user})
+        res.redirect("/")
       })
       .catch(function(errors){
         res.send({errors: errorString(errors)})
-      })    
+      })
+    })
+  })
+
+  expressApp.post("/logout", function(req, res){
+    var currentUser = Auth.findCurrentUser(req)
+    var loggedOutUser = currentUser.then((user) => { return Auth.logout(user) })
+    loggedOutUser
+    .then(function(user) {
+      delete req.session.sessionToken
+      res.redirect("/")
+    })
+    .catch(function(errors) { res.send({errors: errorString(errors)}) })
   })
 
   expressApp.get("/", function(req, res){
-    res.render("views/index.ejs", { session: {} })
+    Auth.findCurrentUser(req)
+    .then(function(user){ renderIndex(req, res, user) })
+    .catch(function(err){ renderIndex(req, res, false) })
   })
 
   return expressApp

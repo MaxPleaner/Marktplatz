@@ -157,16 +157,8 @@ userORM.beforeUpdate(function(user, options, callback) {
       }.bind(this))
     }
 
-    this.logout = function(params) {
-      return new Promise(function(resolve, reject) {
-        return this.findOne(params)
-          .then(function(user){
-            return Promise.all([user, this.setNullSession(user)])
-          }.bind(this))
-          .catch(function(){
-            return reject("could not find user to logout")
-          }.bind(this))
-      }.bind(this))
+    this.logout = function(user) {
+      return this.setNullSession(user)
     }
 
     this.publicAttrs = function(user) {
@@ -179,9 +171,7 @@ userORM.beforeUpdate(function(user, options, callback) {
 
     this.setNullSession = function(user){
       if (user) {
-        return Promise.all([
-          user, user.updateAttributes({sessionToken: undefined})
-        ])
+        return user.updateAttributes({sessionToken: undefined})
       } else {
         return Promise.reject("could not null session on undefined user")
       }

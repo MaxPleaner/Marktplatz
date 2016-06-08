@@ -1,3 +1,5 @@
-<% if (!session.currentUser){ %>
+<% if (user){ %>
+  <% include authenticated.ejs %>
+<% } else { %>
   <% include auth.ejs %>
 <% } %>

@@ -1,0 +1,13 @@
+<%- contentFor("body")  %>
+Authenticated!
+
+<form action="/logout" method="POST">
+  <input type="submit" value="logout">
+</form>
+
+<%- Object.keys(session)  %>
+<%- Object.keys(user)  %>
+
+<%- contentFor("head")  %>
+
+<%- contentFor("scripts")  %>
