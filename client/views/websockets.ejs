@@ -1,8 +1,99 @@
 <script>
 
-  var ws = new WebSocket("ws://localhost:4080")
-  ws.addEventListener("message", function(e) {
-      var msg = e.data;
-      console.log(msg)
-  });
+  window.pageReady = function(map, mapHelpers) {
+
+    var sessionToken = $("#sessionToken").attr("value")
+
+    function geolocate(successFn, errFn) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          successFn([pos.coords.latitude, pos.coords.longitude])
+        }, errFn)
+      }
+    }
+
+    function onWsOpen (e) {
+      ws.send(JSON.stringify({cmd: "login", sessionToken: sessionToken}))
+    }
+
+    function onWsMessage (e) {
+      var data = JSON.parse(e.data)
+      switch (data.cmd) {
+        case "loginSuccess":
+          console.log("loginSuccess")
+          loginSuccess();
+          break;
+        case "mapData":
+          console.log("mapData")
+          addMapData(data.users)
+          break;
+        case "userChange":
+          console.log("userChange")
+          userChange(data.user)
+          break;
+        case "userRemove":
+          console.log("userRemove")
+          userRemove(data.user)
+          break;
+      }
+    }
+
+    function loginSuccess () {
+      geolocate(function(coords) {
+        ws.send(JSON.stringify({cmd: "mapPing", user: {
+          username: $("#username").attr("value"),
+          sessionToken: sessionToken,
+          latitude: coords[0],
+          longitude: coords[1]
+        }}));
+        ws.send(JSON.stringify({
+          cmd: "loginConfirm",
+        }))
+      }, function(err) {console.log("err: " + err)})
+    }
+  
+    function addMapData (users) {
+      var $users = $("#users")
+      users.forEach(function(user){
+        var $user = $("<span></span>")
+        $user.attr("username", user['username'])
+        $user.attr("latitude", user['latitude'])
+        $user.attr('longitude', user['longitude'])
+        $user.css("display", "none")
+        $users.append($user)
+        mapHelpers.appendToMap(user)
+      })
+    }
+
+    function userNode (user) {
+      return $("#users").find("[username='" + user.username + "']")
+    }
+
+    function userChange (user) {
+      var $user = userNode(user)
+      $user.attr("latitude", user.latitude)
+      $user.attr("longitude", user.longitude)
+    }
+
+    function userRemove (user) {
+      userNode(user).remove()
+      mapHelpers.removeFromMap(user)
+    }
+
+    function initWebsockets () {
+      window.ws = new WebSocket("ws://localhost:4080")
+      ws.addEventListener("message", onWsMessage);
+      ws.addEventListener("open", onWsOpen);
+    }
+  
+    if ((typeof(sessionToken) == 'string') && (sessionToken.length > 0)) {
+      // Meaining authenticated.ejs is being shown 
+      initWebsockets()
+    }
+  
+  }
+
+
+
+
 </script>

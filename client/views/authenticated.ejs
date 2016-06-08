@@ -1,20 +1,69 @@
 <%- contentFor("body")  %>
 Authenticated!
-
+<div id="map"></div>
 
 <form action="/logout" method="POST">
   <input type="submit" value="logout">
 </form>
 
+  <span
+  id="sessionToken"
+  value="<%- user.sessionToken %>"
+  style="display: none">
+  </span>
+
+  <span
+  id="username"
+  value="<%- user.username %>"
+  style="display: none">
+  </span>
+
+  <span
+  id="users"
+  style="display: none">
+</span>
+
+
 <%- contentFor("head")  %>
+<style>
+  #map {
+    width: 500px;
+    height: 500px;
+  }
+</style>
+
 
 <%- contentFor("scripts")  %>
 
 <script>
+    var map;
+    var mapHelpers = {}
+    var markers = {}
 
-  var sessionToken = "<%- user.sessionToken %>"
-  var websocketOnOpen = ws.onopen = function() {
-    ws.send(JSON.stringify({cmd: "login", sessionToken: sessionToken}))
-  }
+    mapHelpers.appendToMap = function(user) {
+      var marker = markers[user.username] = new google.maps.Marker({
+        position: { lat: user.latitude, lng: user.longitude },
+        map: map,
+        title: user.username
+      })
+      marker.setMap(map)
+    }
+
+    mapHelpers.removeFromMap = function(user) {
+        markers[user.username].setMap(null)
+    }
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: -34.397, lng: 150.644},
+        zoom: 1
+      });
+      $(pageReady(map, mapHelpers))
+    }
+
 
 </script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=<%- process.env.GoogleApiKey %>&callback=initMap">
+</script>
+
