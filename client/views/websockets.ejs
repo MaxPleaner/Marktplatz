@@ -29,7 +29,7 @@
           break;
         case "userChange":
           console.log("userChange")
-          userChange(data.user)
+          userChange(data.users)
           break;
         case "userRemove":
           console.log("userRemove")
@@ -40,43 +40,33 @@
 
     function loginSuccess () {
       geolocate(function(coords) {
-        ws.send(JSON.stringify({cmd: "mapPing", user: {
-          username: $("#username").attr("value"),
-          sessionToken: sessionToken,
-          latitude: coords[0],
-          longitude: coords[1]
-        }}));
         ws.send(JSON.stringify({
           cmd: "loginConfirm",
         }))
+        window.setInterval(function(){
+          ws.send(JSON.stringify({cmd: "mapPing", user: {
+            username: $("#username").attr("value"),
+            sessionToken: sessionToken,
+            latitude: coords[0],
+            longitude: coords[1]
+          }}));
+        }, 5000)
       }, function(err) {console.log("err: " + err)})
     }
   
     function addMapData (users) {
-      var $users = $("#users")
       users.forEach(function(user){
-        var $user = $("<span></span>")
-        $user.attr("username", user['username'])
-        $user.attr("latitude", user['latitude'])
-        $user.attr('longitude', user['longitude'])
-        $user.css("display", "none")
-        $users.append($user)
         mapHelpers.appendToMap(user)
       })
     }
 
-    function userNode (user) {
-      return $("#users").find("[username='" + user.username + "']")
-    }
-
-    function userChange (user) {
-      var $user = userNode(user)
-      $user.attr("latitude", user.latitude)
-      $user.attr("longitude", user.longitude)
+    function userChange (users) {
+      users.forEach(function(user){
+        mapHelpers.userChange(user)
+      })
     }
 
     function userRemove (user) {
-      userNode(user).remove()
       mapHelpers.removeFromMap(user)
     }
 

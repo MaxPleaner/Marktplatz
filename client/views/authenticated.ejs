@@ -18,12 +18,6 @@ Authenticated!
   style="display: none">
   </span>
 
-  <span
-  id="users"
-  style="display: none">
-</span>
-
-
 <%- contentFor("head")  %>
 <style>
   #map {
@@ -51,6 +45,12 @@ Authenticated!
 
     mapHelpers.removeFromMap = function(user) {
         markers[user.username].setMap(null)
+        delete markers[user.username]
+    }
+
+    mapHelpers.userChange = function(user) {
+      mapHelpers.removeFromMap(user)
+      mapHelpers.appendToMap(user)
     }
 
     function initMap() {
