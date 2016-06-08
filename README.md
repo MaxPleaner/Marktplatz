@@ -10,6 +10,10 @@ Users are able to edit their own profiles, and any change they make will be visi
 
 On 5 second intervals, users' locations are pinged to the server and all connected clients' see their maps update to show any change. 
 
+## Does it work?
+
+It should, except there might be a bug where only one user can be logged in at once.
+
 ## How was it built
 
 The server is written in ES6 Javacript, but can run on older platforms as well via [Babel](/https://babeljs.io/).
