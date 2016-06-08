@@ -30,6 +30,8 @@ For the client, [Bower](http://bower.io/) is used as a package manager and the s
 
 _Note that all the following commands should be run from within the repo's root directory. In other words, don't `cd` anywhere else before running them._
 
+**start by cloning the repo**
+
 1. Go to `scripts/env_setup.sh.example` and fill in the required environment variables. Then remove the `.example` from the extension. This file is in `.gitignore`.
 2. Start the server: there are two ways to do this:
   1. using babel to compile. Use `scripts/compile_and_run` to do this.
