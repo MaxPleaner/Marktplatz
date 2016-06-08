@@ -16,7 +16,7 @@ The server is written in ES6 Javacript, but can run on older platforms as well v
 
 There are two web servers running concurrently:  
   1. [Express.js](http://expressjs.com/) is the "main" server which connects to the database and serves HTML pages
-  2. [https://github.com/websockets/ws] provides a Websocket server
+  2. [ws](https://github.com/websockets/ws) provides a Websocket server
 
 [Sequelize](http://docs.sequelizejs.com/en/latest/) is a promise-based ORM used with Express.
 
