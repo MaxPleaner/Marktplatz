@@ -60,14 +60,32 @@
     var $profileText = $("#profileForm textarea")
     var prevProfileText = $profileText.val()
 
+    function stringNotEmpty(string) {
+      (typof(string) == 'string') &&
+      (string.length > 1)
+    }
+
+    function sanitizeProfileText(user) {
+      var profileText = user.profileText
+      if (profileText == prevProfileText) {
+        return undefined
+      } else if (stringNotEmpty(profileText)) {
+        // remove whitespace from beginning & end
+        return $.trim(profileText)
+      } else { return undefined }
+    }
+
     function userObj (coords) {
-      return nullifyEmptyStringVals({
+      var profileText = $profileText.val()
+      var user = nullifyEmptyStringVals({
         username: $username.attr("value"),
         sessionToken: sessionToken,
         latitude: coords[0],
         longitude: coords[1],
-        profileText: $profileText.val()
+        profileText: profileText
       })
+      user.profileText = sanitizeProfileText(user)
+      return user
     }
 
     function mapPing (coords) {

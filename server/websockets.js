@@ -42,6 +42,7 @@ var WebsocketServer = module.exports = function(wsServer, server){
     }
   }
 
+  // Sends users to client
   function mapData () {
     var data = []
     var wsList = wsServer.connections
