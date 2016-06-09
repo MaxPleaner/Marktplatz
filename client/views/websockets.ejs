@@ -2,9 +2,16 @@
 
   window.pageReady = function(map, mapHelpers) {
 
-    var sessionToken = $("#sessionToken").attr("value")
-
     window.markers = {}
+
+    var sessionToken = $("#sessionToken").attr("value")
+    var $profileSaved = $("#profileSaved")
+    var $username = $("#username")
+    var $profileText = $("#profileForm textarea")
+    var prevProfileText = $profileText.val()
+    var prevLatitude = $("#latitude").val()
+    var prevLongitude = $("#longitude").val()
+
 
     function geolocate(successFn, errFn) {
       if (navigator.geolocation) {
@@ -47,7 +54,6 @@
       }
     }
 
-    var $profileSaved = $("#profileSaved")
 
     function profileSaved() {
       $profileSaved.css("display", "true")
@@ -56,23 +62,53 @@
       }, 5000)
     }
 
-    var $username = $("#username")
-    var $profileText = $("#profileForm textarea")
-    var prevProfileText = $profileText.val()
 
     function stringNotEmpty(string) {
-      (typof(string) == 'string') &&
+      (typeof(string) == 'string') &&
       (string.length > 1)
     }
 
+    // Set the profile text to undefined
+    // if it is the same as the previous
+    // profile text.
     function sanitizeProfileText(user) {
       var profileText = user.profileText
       if (profileText == prevProfileText) {
         return undefined
       } else if (stringNotEmpty(profileText)) {
         // remove whitespace from beginning & end
-        return $.trim(profileText)
+        profileText = $.trim(profileText)
+        // update the previous profile text
+        prevProfileText = profileText
       } else { return undefined }
+    }
+
+    function getPrevCoords() {
+      return {
+        latitude: prevLatitude,
+        longitude: prevLongitude
+      }
+    }
+
+    // Set coords to undefined
+    // if they haven't changed since the last ping
+    function sanitizeCoords(user) {
+      // debugger
+      var coords = {
+        latitude: user.latitude,
+        longitude: user.longitude
+      }
+      var prevCoords = getPrevCoords()
+      if (
+        (coords.latitude == prevCoords.latitude) &&
+        (coords.longitude == prevCoords.longitude)
+      ) {
+        return { latitude: null, longitude: null }
+      } else {
+        prevLatitude = coords.latitude
+        prevLongitude = coords.longitude
+        return coords
+      }
     }
 
     function userObj (coords) {
@@ -85,12 +121,19 @@
         profileText: profileText
       })
       user.profileText = sanitizeProfileText(user)
+      var coords = sanitizeCoords(user)
+      user.latitude = coords.latitude
+      user.longitude = coords.longitude
       return user
     }
 
     function mapPing (coords) {
       var user = userObj(coords)
-      ws.send(JSON.stringify( { cmd: "mapPing", user: user } ));
+      console.log(user)
+      ws.send(JSON.stringify( {
+        cmd: "mapPing",
+        user: user
+      } ));
     }
  
     function loginSuccess () {

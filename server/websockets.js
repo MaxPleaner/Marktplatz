@@ -65,13 +65,37 @@ var WebsocketServer = module.exports = function(wsServer, server){
   }
 
   function persistProfileText(user) {
-    return server.Models.User.findOne({
-      sessionToken: user.sessionToken
-    })
-    .then(function(userRecord){
-      return userRecord.updateAttributes({
-        profileText: user.profileText
+    if (user.profileText) {
+      return server.Models.User.findOne({
+        sessionToken: user.sessionToken
       })
+      .then(function(userRecord){
+        return userRecord.updateAttributes({
+          profileText: user.profileText
+        })
+      })
+    } else { return Promise.accept(user) }
+  }
+
+    // The client keeps track of attributes
+    // and sets them to 'undefined' if they have
+    // not changed since the last ping.
+    // Only update all clients if one of these
+    // attributes is defined.
+  function hasUserChanged (user) {
+    (user.latitude) ||
+    (user.longitude) ||
+    (user.profileText)
+  }
+
+  // Command to send user to will be either
+  // "userChange" - for updates
+  // or "mapData" - for new users and to send an
+  //                initial list when the client loads
+  function sendUserToAll (cmd, user) {
+    sendToAll({
+      cmd: cmd,
+      users: [user]
     })
   }
 
@@ -79,20 +103,24 @@ var WebsocketServer = module.exports = function(wsServer, server){
     user = setCoords(user)
     var wsList = wsServer.connections
     var sessionToken = user.sessionToken
+    var cmd
+    wsList[sessionToken].user = _.extend({}, user)
     delete user.sessionToken
-    if (wsList[sessionToken].user) {cmd = "userChange"} else { cmd = "mapData" }
-    wsList[sessionToken].user = user
-    persistProfileText(user)
-    .then(function(userRecord){
-      sendToAll({
-        cmd: cmd,
-        users: [_.extend(user, {profileText: userRecord.profileText})]
-      })
-    })
-    .catch(function(err){
-      console.dir(err)
-      console.log("err with map ping")
-    })
+    if (wsList[sessionToken].user) {
+      if (hasUserChanged(user)) {
+        persistProfileText(user)
+        .then(function(userRecord){
+          console.log("user cange")
+          sendUserToAll("userChange", user)
+        })
+        .catch(function(err){
+          console.log(err, "err saving profile text")
+        })
+      }
+    } else {
+      console.log("map data")
+      sendUserToAll("mapData", user)
+    }
   }
 
   var onMessage = curry(function (openWs, message) {
