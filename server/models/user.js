@@ -56,31 +56,33 @@ module.exports = function(sequelize, Sequelize, _) {
     }
   })
 
-var hasSecurePassword = function(user, options, callback) {
-  if (user.password != user.password_confirmation) {
-    throw new Error("Password confirmation doesn't match Password");
-  }
-  bcrypt.hash(user.get('password'), 10, function(err, hash) {
-    if (err) return callback(err);
-    user.set('password_digest', hash);
-    return callback(null, options);
-  });
-};
+  var hasSecurePassword = function(user, options, callback) {
+    if (user.password != user.password_confirmation) {
+      throw new Error("Password confirmation doesn't match Password");
+    }
+    bcrypt.hash(user.get('password'), 10, function(err, hash) {
+      if (err) return callback(err);
+      user.set('password_digest', hash);
+      return callback(null, options);
+    });
+  };
 
-userORM.beforeCreate(function(user, options, callback) {
-  if (user.email) { user.email = user.email.toLowerCase() }
-  if (user.password)
-    hasSecurePassword(user, options, callback);
-  else
-    return callback(null, options);
-})
-userORM.beforeUpdate(function(user, options, callback) {
-  if (user.email) { user.email = user.email.toLowerCase() }
-  if (user.password)
-    hasSecurePassword(user, options, callback);
-  else
-    return callback(null, options);
-})
+
+  userORM.beforeCreate(function(user, options, callback) {
+    if (user.email) { user.email = user.email.toLowerCase() }
+    if (user.password)
+      hasSecurePassword(user, options, callback);
+    else
+      return callback(null, options);
+  })
+
+  userORM.beforeUpdate(function(user, options, callback) {
+    if (user.email) { user.email = user.email.toLowerCase() }
+    if (user.password)
+      hasSecurePassword(user, options, callback);
+    else
+      return callback(null, options);
+  })
 
 
   var userModel = function(_, userORM) {
@@ -92,71 +94,57 @@ userORM.beforeUpdate(function(user, options, callback) {
     this.find = function(params) {
       var params = _.extend({}, params) // a shallow clone
       var params = this.publicAttrs(params) // sanitize
-      return new Promise(function(resolve, reject) {
-        return this.userORM.findAll({where: params})
-          .then(function(users){
-            if (users.length > 0) {
-              return resolve(users)
-            } else {
-              return reject("no users found")
-            }   
-          }.bind(this))
-          .catch(function(err){return reject(err)})
+      return this.userORM.findAll({where: params})
+      .then(function(users){
+        if (users.length > 0) {
+          return Promise.resolve(users)
+        } else {
+          return Promise.reject("no users found")
+        }   
       }.bind(this))
     }
 
     this.findOne = function(params) {
-      return new Promise(function(resolve, reject) {
-        return this.find(params)
-          .then(function(users){
-            return resolve(users[0])
-          }.bind(this))
-          .catch(function(e){return reject("User not found")})
+      return this.find(params)
+      .then(function(users){
+        return Promise.resolve(users[0])
       }.bind(this))
+      .catch(function(e){return Promise.reject("User not found")})
     }
 
     this.login = function(params) {
-      return new Promise(function(resolve, reject) {
-        return this.findOne(params)
+      return this.findOne(params)
+      .then(function(user){
+        if (user.authenticate(params.password)) {
+          var sessionToken = this.newSessionToken()
+          return user.updateAttributes({
+              sessionToken: sessionToken
+          })
           .then(function(user){
-            if (user.authenticate(params.password)) {
-              var sessionToken = this.newSessionToken()
-              return user.updateAttributes({
-                  sessionToken: sessionToken
-              })
-              .then(function(user){
-                return resolve(this.publicAttrs(user))
-              }.bind(this))
-              .catch(function(err){return reject(err)})
-            } else {
-              return resolve("incorrect password")
-            }
+            return Promise.resolve(this.publicAttrs(user))
           }.bind(this))
-          .catch(function(err){return reject(err)})
+        } else {
+          return Promise.reject("incorrect password")
+        }
       }.bind(this))
     }
 
     this.register = function(params) {
-      return new Promise(function(resolve, reject) {
-        return this.findOne(params)
-          .then(
-          function(){
-              return reject("user already exists")
-            }.bind(this))
-          .catch(
-            function(err){
-              return this.userORM.create(params)
-                .then(function(user){
-                  var sessionToken = this.newSessionToken();
-                  return user.updateAttributes({sessionToken: sessionToken})
-                    .then(function(){
-                      return resolve(this.publicAttrs(user))
-                    }.bind(this))
-                    .catch(function(err){return reject(err)})
-                }.bind(this))
-                .catch(function(err){return reject(err)})
-            }.bind(this)
-          )
+      return this.findOne(params)
+      .then(function(){
+          return Promise.reject("user already exists")
+      }.bind(this))
+      .catch(function(err){
+        return this.userORM.create(params)
+        .then(function(user){
+          var sessionToken = this.newSessionToken();
+          return user.updateAttributes({
+            sessionToken: sessionToken
+          })
+          .then(function(){
+            return Promise.resolve(this.publicAttrs(user))
+          }.bind(this))
+        }.bind(this))
       }.bind(this))
     }
 

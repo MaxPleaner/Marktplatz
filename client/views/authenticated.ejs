@@ -127,7 +127,7 @@ Saved
           })
       )
       var userBox = mapHelpers.userBox(user)
-      if (userBox) {
+      if (userBox.length > 0) {
          // is this user already selected for the profile box
         $profileBox.html(mapHelpers.newProfileBox(user))
       }

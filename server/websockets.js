@@ -64,7 +64,9 @@ var WebsocketServer = module.exports = function(wsServer, server){
   }
 
   function persistProfileText(user) {
-    return server.Models.User.findOne({sessionToken: user.sessionToken})
+    return server.Models.User.findOne({
+      sessionToken: user.sessionToken
+    })
     .then(function(userRecord){
       return userRecord.updateAttributes({
         profileText: user.profileText
@@ -87,7 +89,7 @@ var WebsocketServer = module.exports = function(wsServer, server){
       })
     })
     .catch(function(err){
-      console.log(err)
+      console.dir(err)
       console.log("err with map ping")
     })
   }
