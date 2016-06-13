@@ -79,22 +79,21 @@ var server = module.exports = function(callback) {
 
   var begin = function(startFromREPL) {
     var server = this;
-    return new Promise(function(resolve, reject) {
-      server.Models.syncModels(server.ORM).then(function(){
-        console.log("synced models".green)
-        if ((require.main === module) || startFromREPL) {
-          console.log("executed directly".green)
-          startServer(server)
-        } else {
-          console.log("required as a module".green)
-          console.log("loading REPL".green)
-          server._ = _ // exports Underscore to REPL
-          console.log("to enable colors: require('colors')".rainbow)
-        }
-        return resolve(server)
-      })
-    })
+    return server.Models.syncModels(server.ORM).then(function(){
+      console.log("synced models".green)
+      if ((require.main === module) || startFromREPL) {
+        console.log("executed directly".green)
+        startServer(server)
+      } else {
+        console.log("required as a module".green)
+        console.log("loading REPL".green)
+        server._ = _ // exports Underscore to REPL
+        console.log("to enable colors: require('colors')".rainbow)
+      }
+      return Promise.resolve(server)
+    }).catch(function(e) { throw new Error(e.message) } )
   }.bind(server)
+  
   server.begin = begin
   
   begin().then(function(server){
