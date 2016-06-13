@@ -91,7 +91,7 @@ var server = module.exports = function(callback) {
         console.log("to enable colors: require('colors')".rainbow)
       }
       return Promise.resolve(server)
-    }).catch(function(e) { throw new Error(e.message) } )
+    })
   }.bind(server)
   
   server.begin = begin
