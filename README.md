@@ -9,7 +9,7 @@ If a user clicks another user's icon on the map, a "profile box" pops up for the
 Users are able to edit their own profiles, and any change they make will be visiblle to all connected clients within 5 seconds. 
 On 5 second intervals, users' locations are pinged to the server and all connected clients' see their maps update to show any change. 
 
-For a similar project, see [spaceDagger](https://github.com/maxpleaner/spacedagger), which accomplishes most of the same functionality with far less code. 
+For a similar project, see [spaceDagger](https://github.com/maxpleaner/spacedagger), which uses Meteor to accomplish most of the same functionality with far less code. 
 
 ## Does it work?
 
